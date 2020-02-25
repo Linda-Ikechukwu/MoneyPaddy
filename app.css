@@ -1,0 +1,437 @@
+/*Variable Definitions*/
+:root {
+  --primary-color: #e9d10f;
+  --secondary-color: #6b7b8c;
+  --dark-text-color: rgb(59, 77, 97);
+  --primary-font: 'Josefin Sans', sans-serif;
+  --secondary-font: 'Josefin Slab', serif;
+}
+
+/*Utility Classes*/
+.center{
+  text-align: center;
+}
+
+/*Some resets*/
+*::before,
+*::after{
+    margin:0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+li{
+  list-style-type: none;
+}
+
+ul{
+  padding-left:0;
+}
+/**/
+
+html{
+    box-sizing: border-box;
+    font-size: 62.5%;
+ }
+
+body{
+  max-width: 100vw;
+  margin:0;
+  padding:0;
+  font-size: 1.6rem;
+  text-transform: capitalize;
+}
+
+header{
+  height: 55vh;
+  clip-path: ellipse(60% 95% at 50% 5%);
+  background-color:var(--primary-color);
+  color: var(--dark-text-color);
+  font-family: var(--primary-font);
+  padding:2rem;
+
+}
+
+header h1{
+  font-size: 4rem;
+  margin: 1rem 0;
+}
+
+header h2{
+  font-size: 3rem;
+  margin: 1rem 0;
+}
+
+.totals{
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+}
+
+.total{
+  font-weight: bold;
+  padding:1rem;
+  border: 3px solid #f9d10f;
+  box-shadow: 1px 3px 10px rgba(0,0,0,0.4);
+}
+
+.total > *{
+  margin: 0 5px;
+}
+
+.totals :not(:last-child){
+   margin-right: 2rem;
+   
+}
+
+.total__percentage{
+  font-style: italic;
+  color:white;
+  background-color: rgba(0,0,0,0.4);
+  padding: 0.6rem;
+}
+
+.add_percentage{
+  color: white;
+  font-size: 1.3rem;
+  font-style: italic;
+  padding: 1px 5px;
+  background-color: rgba(59, 77, 97, 0.5);
+}
+
+.err_msg, .err_msg_mobile{
+   color: rgb(136, 6, 6);
+   text-align: center;
+   margin-top: 0;
+   margin-bottom: 0;
+   font-style: italic;
+}
+
+aside.inputs{
+  width: 50rem;
+  height: 10rem;
+  background:var(--secondary-color);
+  opacity: 0.5;
+  margin: 2rem auto;
+  padding: 1rem;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 1px 5px 10px rgba(0,0,0,0.4);
+}
+
+aside select, aside form input, aside form button{
+  padding:0.8rem;
+  font-size: 1.4rem;
+  transition: all .2s ease-in;
+}
+
+/*Attempt to remove spaces between the input and button*/
+aside form input, aside form button{
+  border: .5px;
+}
+
+
+button.add{
+  width: 5rem;
+  font-weight: bold;
+  color:white;
+  background-color: black;
+  border-radius: 4px;
+}
+
+button.add:hover, select:hover, .overlay_add:hover, .settings_icon:hover{
+  cursor: pointer;
+}
+button.add:hover, input:focus, .overlay_add:hover{
+  scale: 1.05;
+  transform: translateY(1px);
+  box-shadow: 1px 5px 10px rgba(0,0,0,0.4);
+
+}
+
+input:focus, select:focus{
+  border: 2px solid #f9d10f;
+}
+
+.input_amount{
+  width: 10rem;
+}
+
+.input_description{
+  width: 20rem;
+  border-right: solid black;
+}
+
+.add_mobile{
+  display:none;
+  visibility: hidden;
+  margin: 3rem 39%;
+}
+
+.add_mobile_button{
+  width: 7rem;
+  height: 7rem;
+  outline:none;
+  border: 2px solid var(--dark-text-color);
+  font-size: 3rem;
+  font-weight: bold;
+  background: var(--dark-text-color);
+  color: var(--primary-color);
+  border-radius: 50%;
+  box-shadow: 1px 3px 10px rgba(0,0,0,0.4);
+  transition: all .2s ease-in;
+}
+
+.add_mobile_button:hover{
+  scale: 1.05;
+  transform: translateY(1px);
+  color: white;
+  cursor: pointer;
+}
+/*Attempt to style the select options*/
+select{
+  appearance: none;
+}
+select option{
+  background-color: var(--primary-color);
+  font-family: var(--secondary-font);
+
+}
+select.input_option:focus > option.opt:checked,
+select.input_option:focus > optgroup > option.opt:checked {
+  background-color:  #e9d10f !important;
+  color: #3b4d61 !important;
+}
+/**/
+
+main{
+  display:flex;
+  color: var(--dark-text-color);
+  justify-content: center;
+  padding: 2rem;
+}
+
+main h3{
+  font-size: 2rem;
+  text-align: center;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--primary-color);
+}
+
+.add{
+  width: 40rem;
+}
+
+.add:not(:last-child){
+   margin-right: 4rem;
+}
+
+.incomes_list,.expenses_list{
+  font-family: var(--secondary-font);
+}
+
+.add li{
+  display: flex;
+  margin-bottom: .5rem;
+  border: 2px solid var(--primary-color);
+  box-shadow: 2px 2px 10px rgba(0,0,0,0.4);
+  padding: 1rem;
+  transition: all 0.2s ease-in;
+}
+
+.add li:hover, .settings_icon:hover{
+  transform: translateY(1px);
+  scale: 1.01;
+}
+
+.add li > *{
+  margin-right: 1rem;
+}
+
+.add_description{
+  flex-grow: 1;
+}
+
+li .add_remove{
+  margin-right: 2rem;
+  padding: 0 5px;
+  cursor: pointer;
+  border: 2px solid var(--dark-text-color);
+  border-radius: 40%;
+}
+
+li .add_remove:hover{
+  scale: 1.2;
+  color:red;
+  border: 2px solid red;
+}
+
+.expenses_list .add_amount{
+  color: red;
+}
+.overlay{
+  visibility: hidden;
+  position: fixed;
+  top: 0;
+  left:0;
+  height: 100%;
+  width:100vw;
+  background-color: rgba(0,0,0,0.8);
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+div#overlay_form{
+  position: fixed;
+  top: 50%;
+  left:50%;
+  visibility: hidden;
+  display: flex;
+  flex-direction:column;
+  justify-content: center;
+  align-items: center;
+  border:3px solid var(--dark-text-color);
+  background-color: white;
+  width: 30rem;
+  height: 0rem;
+  box-shadow: 2px 2px 10px rgba(0,0,0,0.8);
+  z-index: 10;
+  transform: translate(-50%, -50%);
+}
+
+.overlay_option, .overlay_description, .overlay_amount{
+  border: 2px solid #f9d10f;
+  color: var(--dark-text-color);
+  width:25rem;
+  padding: 1rem;
+  font-size: 1.5rem;
+  margin-bottom: 0.8rem;
+  border-radius: 2px;
+  font-family: var(--secondary-font);
+  border-radius: 4px;
+}
+
+select.overlay_option{
+  width: 27rem;
+}
+
+.overlay_add{
+  width: 5rem;
+  height: 5rem;
+  padding: 1rem;
+  font-size: 1.7rem;
+  outline:none;
+  border: 2px solid var(--dark-text-color);
+  font-weight: bold;
+  background-color: var(--dark-text-color);
+  color: var(--primary-color);
+  border-radius: 50%;
+  box-shadow: 1px 3px 10px rgba(0,0,0,0.4);
+}
+
+.settings_icon{
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 4rem;
+  color: var(--dark-text-color);
+  background: none;
+  border: none;
+  z-index: 30;
+  transition: all 0.2s ease-in;
+}
+
+.settings_body{
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: white;
+  z-index: 20;
+  border: 4px solid var(--primary-color);
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.settings_body_content{
+  margin-top: 5rem;
+  padding: 1rem;
+}
+
+.open{
+  display: block;
+  animation: open 100ms ease-in 1;
+  height: 100vh;
+  width: 100vw;
+}
+
+@keyframes open{
+  from{
+    height: 0;
+    width: 0;
+  }
+  to{
+    height: 100vh;
+    width: 100vw;
+  }
+}
+
+.close{
+  animation: close .2s ease-out  1;
+}
+
+@keyframes close{
+  from{
+    height: 100vh;
+    width: 100vw;
+  }
+  to{
+    height: 0;
+    width:0;
+  }
+}
+/*class to open the inner content body*/
+.hidden{
+  display: none;
+}
+
+/*Mobile Styles*/
+@media screen and (max-width:500px){
+  header{
+    height: 60vh;
+  }
+  header h2{
+    padding-top: 1rem;
+  }
+  .settings_icon{
+    font-size: 5rem;
+  }
+  main{
+    flex-wrap: wrap;
+  }
+  .totals{
+    flex-direction: column;
+  }
+  .totals :not(:last-child){
+     margin-right: 0;
+  }
+  .total{
+    margin: 10px 0;
+  }
+  .add:not(:last-child){
+     margin-right: 0;
+  }
+  aside.inputs{
+    display:none;
+    visibility: hidden;
+    width:0px;
+    height: 0px;
+  }
+  .add_mobile{
+    display:block;
+    visibility:visible;
+  }
+}
