@@ -1,0 +1,43 @@
+{
+  "name": "moneypaddy",
+  "version": "1.0.0",
+  "description": "An expense and income tracker built by Linda ikechukwu",
+  "main": "app.js",
+  "scripts": {
+    "dev": "webpack --mode development",
+    "build": "webpack --mode development",
+    "start": "webpack-dev-server --mode development --open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Linda-Ikechukwu/MoneyPaddy.git"
+  },
+  "keywords": [
+    "Linda",
+    "Ikechukwu",
+    "Income",
+    "Tracker",
+    "Expense",
+    "tracker"
+  ],
+  "author": "Linda Ikechukwu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Linda-Ikechukwu/MoneyPaddy/issues"
+  },
+  "homepage": "https://github.com/Linda-Ikechukwu/MoneyPaddy#readme",
+  "dependencies": {
+    "babel-polyfill": "^6.26.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.5",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-es2015": "^6.24.1",
+    "html-webpack-plugin": "^3.2.0",
+    "webpack": "^4.42.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
+  }
+}

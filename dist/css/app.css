@@ -182,6 +182,7 @@ input:focus, select:focus{
   border-radius: 50%;
   box-shadow: 1px 3px 10px rgba(0,0,0,0.4);
   transition: all .2s ease-in;
+  margin-left: 1rem;
 }
 
 .add_mobile_button:hover{
@@ -199,8 +200,8 @@ select option{
   font-family: var(--secondary-font);
 
 }
-select.input_option:focus > option.opt:checked,
-select.input_option:focus > optgroup > option.opt:checked {
+select:focus > option.opt:checked,
+select:focus > optgroup > option.opt:checked {
   background-color:  #e9d10f !important;
   color: #3b4d61 !important;
 }
@@ -345,6 +346,10 @@ select.overlay_option{
   transition: all 0.2s ease-in;
 }
 
+.settings_icon:focus, select#currency{
+  outline:none;
+}
+
 .settings_body{
   position: absolute;
   top: 0;
@@ -357,8 +362,26 @@ select.overlay_option{
 }
 
 .settings_body_content{
+  font-size: 1.7rem;
+  font-family: var(--primary-font);
   margin-top: 5rem;
   padding: 1rem;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+select#currency{
+  font-size: 1.6rem;
+  height: 2.4rem;
+  width:20rem;
+  font-family: var(--secondary-font);
+  
+}
+
+
+label[for="currency"]{
+  margin-right: 5px;
 }
 
 .open{
@@ -401,10 +424,11 @@ select.overlay_option{
 /*Mobile Styles*/
 @media screen and (max-width:500px){
   header{
-    height: 60vh;
+    height: 65vh;
   }
   header h2{
     padding-top: 1rem;
+    margin-top: 3rem;
   }
   .settings_icon{
     font-size: 5rem;
@@ -433,5 +457,20 @@ select.overlay_option{
   .add_mobile{
     display:block;
     visibility:visible;
+  }
+}
+
+@media screen and (max-width:350px){
+  header h1{
+    margin: 4px 0;
+  }
+  .add_mobile_button{
+    margin-left: -1rem;
+  }
+  div#overlay_form{
+    width: 26rem;
+  }
+  .overlay_option, .overlay_description, .overlay_amount{
+    width: 22rem;
   }
 }

@@ -2,8 +2,8 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>Money Friend</title>
-    <link href="app.css" rel="stylesheet">
+    <title>Money Friend - Income and Expense Tracker</title>
+    <link href="css/app.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Josefin+Sans:400,600,700|Josefin+Slab&display=swap" rel="stylesheet">
   </head>
   <body>
@@ -11,7 +11,7 @@
       <h2 class="center">Available Funds for <span class="date">January</span></h2>
       <h1 class="center">
         <span class="sign"></span>
-        <span class="currency">N</span>
+        <span class="currency"></span>
         <span class="available_funds">0</span>
       </h1>
       <div class="totals">
@@ -66,15 +66,20 @@
     <div class="settings">
        <button class="settings_icon">&#9881;</button>
        <div class="settings_body hidden close">
-         <div class="settings_body_content hidden ">
-          <label for="currency">Pick default Currency</label>
+         <div class="settings_body_content hidden">
+          <label for="currency">Pick your Currency :</label>
           <select name="currency" id="currency">
-            <option></option>
+            <option value="&#8358;">Nigerian Naira &nbsp;&nbsp;   (NGN)</option>
+            <option value="&#36;">United States Dollar &nbsp;&nbsp;   (USD)</option>
+            <option value="&euro;">European Euro &nbsp;&nbsp;  (EUR)</option>
+            <option value="&#8373;">Ghanian Cedi &nbsp;&nbsp;   (GHS)</option>
+            <option value="Ksh">Kenyan Shiling &nbsp;&nbsp;  (KES)</option>
+            <option value="ZAR">South African Rand &nbsp;&nbsp;  (ZAR)</option>
           </select>
          </div>
        </div>
     </div>
 
-    <script src="app.js" type="text/javascript"></script>
+
   </body>
 </html>

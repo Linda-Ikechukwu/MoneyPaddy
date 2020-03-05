@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Money Friend - Income and Expense Tracker</title>
+    <link href="css/app.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans:400,600,700|Josefin+Slab&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h2 class="center">Available Funds for <span class="date">January</span></h2>
+      <h1 class="center">
+        <span class="sign"></span>
+        <span class="currency">N</span>
+        <span class="available_funds">0</span>
+      </h1>
+      <div class="totals">
+          <p class="total"> Total Income: <span class="total__income">0</span></p>
+          <p class="total"> Total Expenses: <span class="total__expense">0</span><span class="total__percentage">--</span></p>
+      </div>
+      <p class="err_msg"></p>
+      <aside class="inputs">
+        <select class="input_option" name="input_option">
+          <option class="opt" value="income">Income</option>
+          <option class="opt" value="expense">Expense</option>
+        </select>
+        <form class="" action="index.html" method="post">
+        <input type="text" name="input_description" class="input_description" placeholder="Write a description for the Income/Expense" onchange="if (this.value == '') {this.placeholder = 'Write a description for the Income/Expense'}"><!--
+       --><input type="text" name="input_amount" class="input_amount" placeholder="Amount"><!--Remove white spaces between elements in the UI
+       --><button type="button" name="add" class="add">
+                <span>&check;</span>
+          </button>
+        </form>
+      </aside>
+      <div class="add_mobile">
+        <button type="button" name="add_mobile" class="add_mobile_button">+</button>
+      </div>
+    </header>
+    <main class="main">
+      <div class="add">
+        <h3>Income</h3>
+        <ul class="add-incomes_list">
+           
+        </ul>
+      </div>
+      <div class="add">
+        <h3>Expenses</h3>
+        <ul class="add-expenses_list">
+          
+        </ul>
+      </div>
+    </main>
+    <div class="overlay"></div>
+    <div id="overlay_form">
+      <p class="err_msg_mobile"></p>
+      <select class="overlay_option" name="input_option">
+        <option class="opt" value="income">Income</option>
+        <option class="opt" value="expense">Expense</option>
+      </select>
+      <input type="text" name="input_description" class="overlay_description" placeholder="Write a description for the Income/Expense">
+      <input type="text" name="overlay_amount" class="overlay_amount" placeholder="Amount">
+      <button type="button" name="add" class="overlay_add"><span>&check;</span></button>
+    </div>
+
+    <!--Settings Tab-->
+    <div class="settings">
+       <button class="settings_icon">&#9881;</button>
+       <div class="settings_body hidden close">
+         <div class="settings_body_content hidden ">
+          <label for="currency">Pick default Currency</label>
+          <select name="currency" id="currency">
+            <option></option>
+          </select>
+         </div>
+       </div>
+    </div>
+
+    
+  <script type="text/javascript" src="js/bundle.js"></script></body>
+</html>
