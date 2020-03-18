@@ -2,7 +2,7 @@
 :root {
   --primary-color: #e9d10f;
   --secondary-color: #6b7b8c;
-  --dark-text-color: rgb(59, 77, 97);
+  --dark-text-color: #3b4d61;
   --primary-font: 'Josefin Sans', sans-serif;
   --secondary-font: 'Josefin Slab', serif;
 }
@@ -182,7 +182,7 @@ input:focus, select:focus{
   border-radius: 50%;
   box-shadow: 1px 3px 10px rgba(0,0,0,0.4);
   transition: all .2s ease-in;
-  margin-left: 1rem;
+  margin-right: 1rem;
 }
 
 .add_mobile_button:hover{
@@ -460,7 +460,10 @@ label[for="currency"]{
   }
 }
 
-@media screen and (max-width:350px){
+@media screen and (max-width:370px){
+  header{
+    height: 67vh;
+  }
   header h1{
     margin: 4px 0;
   }
@@ -470,7 +473,10 @@ label[for="currency"]{
   div#overlay_form{
     width: 26rem;
   }
-  .overlay_option, .overlay_description, .overlay_amount{
+  .overlay_description, .overlay_amount{
     width: 22rem;
+  }
+  select.overlay_option, select.overlay_option option{
+    width: 24rem;
   }
 }

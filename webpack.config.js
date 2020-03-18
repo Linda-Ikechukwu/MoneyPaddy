@@ -1,5 +1,7 @@
 const path = require('path'); 
 const HtmlWepbackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     entry: ['babel-polyfill','./src/js/app.js'], 
@@ -14,7 +16,24 @@ module.exports = {
         new HtmlWepbackPlugin({
             filename: 'app.html',
             template:'./src/app.html'
-        })
+        }),
+        new MiniCssExtractPlugin({
+            filename: "css/style.css"
+        }),
+        new CopyPlugin([
+            {
+              from: './src/manifest.json',
+              to: 'manifest.json',
+            },
+            {
+              from: './src/sw.js',
+              to: 'sw.js',
+            },
+            {
+              from: './src/icons',
+              to: 'icons',
+            },
+          ]),
     ],
     module:{
         rules: [
@@ -24,6 +43,24 @@ module.exports = {
                use: {
                    loader: 'babel-loader'
                }
+            },
+            {
+                test: /\.css$/,
+                exclude: /node_modules/,
+                use: [
+                    {
+                      loader: MiniCssExtractPlugin.loader,
+                    },
+                    {
+                      loader: 'css-loader',
+                      options: {
+                        importLoaders: 1,
+                      }
+                    },
+                    {
+                      loader: 'postcss-loader'
+                    }
+                  ]
             }
         ]
     }

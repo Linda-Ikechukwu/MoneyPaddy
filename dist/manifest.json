@@ -1,0 +1,18 @@
+{
+    "name": "Money Paddy",
+    "short_name":"MoneyPaddy",
+    "icons": [
+        {
+            "src":"/",
+            "type":"image/png",
+            "sizes":""
+        }
+    ],
+    "start_url":"/index.html",
+    "scope":".",
+    "display":"standalone",
+    "orientation":"potrait_primary",
+    "background_color":"#e9d10f",
+    "theme_color":"#3b4d61",
+    "description":"Keep track of your income and epenses for every month"
+}
