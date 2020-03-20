@@ -18,7 +18,7 @@ module.exports = {
             template:'./src/app.html'
         }),
         new MiniCssExtractPlugin({
-            filename: "css/style.css"
+            filename: "css/app.css"
         }),
         new CopyPlugin([
             {

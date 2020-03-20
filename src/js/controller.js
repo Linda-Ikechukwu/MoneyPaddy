@@ -64,7 +64,7 @@ export const budgetController = (function(budgetCtl, uiCtl) {
       var input, newItem;
       //Get new data object from the the input fields
       input = uiCtl.getInput();
-  
+
       //check that input fields are not empty and correct data is entered.
       if((input.inputDescription !== " ") && !isNaN(input.inputValue) && input.inputValue > 0){
         //clear error message
@@ -88,6 +88,20 @@ export const budgetController = (function(budgetCtl, uiCtl) {
           document.querySelector(domElements.errMsg).textContent = `*Please enter a description in words and an amount in numbers greater than 0`;
         }
          
+      }
+
+      //Show pwa install banner
+      if(defferedPrompt){
+        defferedPrompt.prompt();
+
+        defferedPrompt.userChoice.then(choice => {
+           if(choice.outcome === 'dismissed'){
+             console.log('User canceled Installation');
+           }else{
+             console.log('User added to home screen');
+           }
+        });
+        defferedPrompt = null;
       }
   
     }
