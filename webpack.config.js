@@ -33,6 +33,10 @@ module.exports = {
               from: './src/icons',
               to: 'icons',
             },
+            {
+              from: './src/idb.js',
+              to: 'idb.js',
+            },
           ]),
     ],
     module:{
@@ -58,7 +62,13 @@ module.exports = {
                       }
                     },
                     {
-                      loader: 'postcss-loader'
+                      loader: 'postcss-loader',
+                      options: {
+                        publicPath: ".",
+                        config: {
+                          path: path.join(__dirname, "./postcss.config.js")
+                        }
+                      }
                     }
                   ]
             }

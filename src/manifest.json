@@ -3,15 +3,35 @@
     "short_name":"MoneyPaddy",
     "icons": [
         {
-            "src":"/",
+            "src":"./icons/48.png",
             "type":"image/png",
-            "sizes":""
+            "sizes":"48x48"
+        },
+        {
+            "src":"./icons/72.png",
+            "type":"image/png",
+            "sizes":"72x72"
+        },
+        {
+            "src":"./icons/96.png",
+            "type":"image/png",
+            "sizes":"96x96"
+        },
+        {
+            "src":"./icons/168.png",
+            "type":"image/png",
+            "sizes":"168x168"
+        },
+        {
+            "src":"./icons/196.png",
+            "type":"image/png",
+            "sizes":"245x234"
         }
     ],
-    "start_url":"/index.html",
+    "start_url":"./app.html",
     "scope":".",
     "display":"standalone",
-    "orientation":"potrait_primary",
+    "orientation":"potrait",
     "background_color":"#e9d10f",
     "theme_color":"#3b4d61",
     "description":"Keep track of your income and epenses for every month"
