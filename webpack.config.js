@@ -2,6 +2,9 @@ const path = require('path');
 const HtmlWepbackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyPlugin = require('copy-webpack-plugin');
+const autoprefixer = require('autoprefixer');
+const cssnano = require('cssnano');
+
 
 module.exports = {
     entry: ['babel-polyfill','./src/js/app.js'], 
@@ -34,8 +37,12 @@ module.exports = {
               to: 'icons',
             },
             {
-              from: './src/idb.js',
-              to: 'idb.js',
+              from: './src/lib/idb.js',
+              to: 'lib/idb.js',
+            },
+            {
+              from: './src/lib/idb-utility.js',
+              to: 'lib/idb-utility.js',
             },
           ]),
     ],
@@ -64,10 +71,7 @@ module.exports = {
                     {
                       loader: 'postcss-loader',
                       options: {
-                        publicPath: ".",
-                        config: {
-                          path: path.join(__dirname, "./postcss.config.js")
-                        }
+                        plugins: () => [autoprefixer(), cssnano()]
                       }
                     }
                   ]

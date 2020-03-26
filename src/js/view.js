@@ -40,16 +40,23 @@ export const budgetView = (function () {
 
     //Publicly accessible method which accepts the resulting object; newItem and its type
     addItemToList: function (obj, type) {
-      var newHtml, element, sign;
+      var newHtml, element;
       //Create html templates based on each input type i.e income or expenses
       if (type === 'income') {
         element = domElements.incomeList;
-        sign = '+'
-        newHtml = `<li id="${obj.id}"><span class="add_remove">&times</span><span class="add_description">${obj.description}</span><span class="add_amount${sign} ${formatNumber(obj.value, type)}</span></li>`
+        newHtml = `<li id="${type}-${obj.id}">
+                    <span class="add_remove">&times</span>
+                    <span class="add_description">${obj.description}</span>
+                    <span class="add_amount"> + ${formatNumber(obj.value, type)}</span>
+                  </li>`
       } else if (type === 'expense') {
         element = domElements.expenseList;
-        sign = '-'
-        newHtml = `<li id="${obj.id}"><span class="add_remove">&times</span><span class="add_description">${obj.description}</span><span class="add_amount">${sign} ${formatNumber(obj.value, type)}</span><span class="add_percentage">- %per%</span></li>`
+        newHtml = `<li id="${type}-${obj.id}">
+                    <span class="add_remove">&times</span>
+                    <span class="add_description">${obj.description}</span>
+                    <span class="add_amount"> - ${formatNumber(obj.value, type)}</span>
+                    <span class="add_percentage">- %per%</span>
+                  </li>`
       }
 
       //Insert newHtml to either an expense list or income list
@@ -85,8 +92,10 @@ export const budgetView = (function () {
 
       if (window.innerWidth <= 520) {
         formFields = [document.querySelector(domElements.overlayDescription), document.querySelector(domElements.overlayValue)]
+        document.querySelector(domElements.errMsgMobile).textContent = "";
       } else {
         formFields = [document.querySelector(domElements.desktopDescription), document.querySelector(domElements.desktopValue)]
+        document.querySelector(domElements.errMsg).textContent = " ";
       }
 
       formFields.forEach(function (current) {
@@ -148,8 +157,18 @@ export const budgetView = (function () {
       document.getElementById(selectorID).remove();
     },
 
+    setUserCurrency: () => {
+      localStorage.setItem('userCurrency', document.querySelector(domElements.selectCurrency).value);
+      document.querySelector(domElements.userCurrency).innerHTML = localStorage.getItem('userCurrency');
+    },
+
     getUserCurrency: () => {
-      document.querySelector(domElements.userCurrency).innerHTML = document.querySelector(domElements.selectCurrency).value;
+      if (localStorage.getItem('userCurrency')) {
+        document.querySelector(domElements.userCurrency).innerHTML = localStorage.getItem('userCurrency');
+      }
+      else {
+        document.querySelector(domElements.userCurrency).innerHTML = '&#8358;';
+      }
     }
 
   };

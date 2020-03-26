@@ -18,20 +18,19 @@
             "sizes":"96x96"
         },
         {
-            "src":"./icons/168.png",
+            "src":"./icons/144.png",
             "type":"image/png",
-            "sizes":"168x168"
+            "sizes":"144x144"
         },
         {
-            "src":"./icons/196.png",
+            "src":"./icons/192.png",
             "type":"image/png",
-            "sizes":"245x234"
+            "sizes":"192x192"
         }
     ],
     "start_url":"./app.html",
-    "scope":".",
+    "scope":"./",
     "display":"standalone",
-    "orientation":"potrait",
     "background_color":"#e9d10f",
     "theme_color":"#3b4d61",
     "description":"Keep track of your income and epenses for every month"

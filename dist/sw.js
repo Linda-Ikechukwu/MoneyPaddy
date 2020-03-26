@@ -1,26 +1,7 @@
-importScripts('./idb.js');
+importScripts('./lib/idb.js');
+importScripts('./lib/idb-utility.js');
 
-//For IndexedDB
-//Open Data Base
-const dbPromise = idb.open('posts-store', 1, function (db) {
-    if (!db.objectStoreNames.contains('posts')) {
-      db.createObjectStore('posts', {keyPath: 'id'});
-    }
-});
-  
-//Write Data  
-const writeData = (st, data) => {
-    return dbPromise
-      .then((db) => {
-        var tx = db.transaction(st, 'readwrite');
-        var store = tx.objectStore(st);
-        store.put(data);
-        return tx.complete;
-    });
-}
-  
-
-const staticCacheName = 'static-6';
+const staticCacheName = 'static-12';
 const dynamicCacheName = 'dynamic-1';
 const staticFiles = [
     './',
@@ -34,7 +15,7 @@ const staticFiles = [
 self.addEventListener('install', event => {
     console.log("service worker installed");
     event.waitUntil(
-        caches.open(staticFilesCache).then(cache => {
+        caches.open(staticCacheName).then(cache => {
             cache.addAll(staticFiles);
         })
     );
@@ -48,7 +29,7 @@ self.addEventListener('activate', event => {
 
     event.waitUntil(caches.keys().then(cacheNames => {
         Promise.all(cacheNames.map(thisCacheName => {
-            if (thisCacheName !== staticCacheName) {
+            if (thisCacheName !== (staticCacheName || dynamicCacheName)) {
 
                 console.log("deleting cache files from", thisCacheName)
 
@@ -62,17 +43,21 @@ self.addEventListener('activate', event => {
 
 //hijacking requests
 self.addEventListener('fetch', event => {
-    var url = 'https://pwagram-99adf.firebaseio.com/posts';
+    var url = 'https://money-paddy.firebaseio.com/inputs/Expenses';
     if (event.request.url.indexOf(url) > -1) {
         event.respondWith(fetch(event.request)
             .then( (res) => {
-                var clonedRes = res.clone();
-                clonedRes.json()
+                let clonedRes = res.clone();
+                clearDatabase('expenses')
+                   .then( () => {
+                      return clonedRes.json();
+                    })
                     .then( (data) =>{
                         for (let key in data) {
-                            writeData('posts', data[key]);
+                            writeData('expenses', data[key]);
                         }
-                    });
+                    })
+                
                 return res;
             })
         );
@@ -91,11 +76,11 @@ self.addEventListener('fetch', event => {
                         if (!response || response.status !== 200 || response.type !== 'basic') {
                             return response;
                         }
-
+                        let responseClone = response.clone();
                         // Clone the response
-                        caches.open(staticCacheName)
+                        caches.open(dynamicCacheName)
                             .then(function (cache) {
-                                cache.put(event.request, response.clone());
+                                cache.put(event.request, responseClone);
                             });
 
                         return response;

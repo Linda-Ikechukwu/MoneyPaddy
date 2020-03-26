@@ -12,6 +12,10 @@
   text-align: center;
 }
 
+.m-top-2{
+  margin-top: 2rem;
+}
+
 /*Some resets*/
 *::before,
 *::after{
@@ -334,8 +338,9 @@ select.overlay_option{
   box-shadow: 1px 3px 10px rgba(0,0,0,0.4);
 }
 
+/*Settings Overlay Styles*/
 .settings_icon{
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   font-size: 4rem;
@@ -365,9 +370,10 @@ select.overlay_option{
   font-size: 1.7rem;
   font-family: var(--primary-font);
   margin-top: 5rem;
-  padding: 1rem;
+  padding: 2rem;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: left;
   flex-wrap: wrap;
 }
 
@@ -379,16 +385,42 @@ select#currency{
   
 }
 
+.usercurrency, .notification, .summary{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.summary{
+  width: 18rem;
+  height: 5rem;
+  color: white;
+  background-color: var(--dark-text-color);
+  border: none;
+  border-radius: 5px;
+  font-size: 1.7rem;
+  font-family: var(--primary-font);
+  padding:1rem;
+}
+
+.summary:focus , .summary:hover {
+  background-color: white;
+  border: 5px solid var(--primary-color);
+  color: var(--dark-text-color);
+  outline: none;  
+}
 
 label[for="currency"]{
   margin-right: 5px;
+
 }
 
 .open{
   display: block;
   animation: open 100ms ease-in 1;
   height: 100vh;
-  width: 100vw;
+  width: 100%;
+  position: fixed;
 }
 
 @keyframes open{

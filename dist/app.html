@@ -1,4 +1,3 @@
-<!--Create icons for web app-->
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 
@@ -15,9 +14,11 @@
   <link rel="manifest" href="./manifest.json">
   <!--Tags for Safari-->
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-status-bar-style" content="#3b4d61">
   <meta name="apple-mobile-web-app-title" content="MoneyPaddy">
   <link rel="apple-touch-icon" href="./icons/48.png" sizes="48 x 48">
+  <link rel="apple-touch-icon" href="./icons/144.png" sizes="144 x 144">
+  <link rel="apple-touch-icon" href="./icons/192.png" sizes="192 x 192">
   <!--Tags for Internet Explorer-->
   <meta name="msappilication-TileImage" content="">
   <meta name="msapplication-TileColor" content="#e9d10f">
@@ -92,20 +93,33 @@
     <button class="settings_icon">&#9881;</button>
     <div class="settings_body hidden close">
       <div class="settings_body_content hidden">
-        <label for="currency">Pick your Currency :</label>
-        <select name="currency" id="currency">
-          <option value="&#8358;">Nigerian Naira &nbsp;&nbsp; (NGN)</option>
-          <option value="&#36;">United States Dollar &nbsp;&nbsp; (USD)</option>
-          <option value="&euro;">European Euro &nbsp;&nbsp; (EUR)</option>
-          <option value="&#8373;">Ghanian Cedi &nbsp;&nbsp; (GHS)</option>
-          <option value="Ksh">Kenyan Shiling &nbsp;&nbsp; (KES)</option>
-          <option value="ZAR">South African Rand &nbsp;&nbsp; (ZAR)</option>
-        </select>
+
+        <div class="usercurrency">
+          <label for="currency">Pick your Currency :</label>
+          <select name="currency" id="currency">
+            <option value="&#8358;">Nigerian Naira &nbsp;&nbsp; (NGN)</option>
+            <option value="&#36;">United States Dollar &nbsp;&nbsp; (USD)</option>
+            <option value="&euro;">European Euro &nbsp;&nbsp; (EUR)</option>
+            <option value="&#8373;">Ghanian Cedi &nbsp;&nbsp; (GHS)</option>
+            <option value="Ksh">Kenyan Shiling &nbsp;&nbsp; (KES)</option>
+            <option value="ZAR">South African Rand &nbsp;&nbsp; (ZAR)</option>
+          </select>
+        </div>
+        
+        <div class="notification m-top-2">
+          <span>Enable Notifications? : </span>
+          <input type="radio" id="Yes" name="Notify" value="yes">
+          <label for="male">Yes</label><br>
+          <input type="radio" id="no" name="Notify" value="no">
+          <label for="female">No</label><br>
+        </div>
+
+        <div><button class="summary m-top-2">Generate Summary</button></div>
       </div>
     </div>
   </div>
 
-  <script src="./sw.js"></script>
+
   <!-- The core Firebase JS SDK is always required and must be listed first -->
   <script src="/__/firebase/7.12.0/firebase-app.js"></script>
 
@@ -115,6 +129,9 @@
 
   <!-- Initialize Firebase -->
   <script src="/__/firebase/init.js"></script>
+
+  <script src="./lib/idb.js"></script>
+  <script src="./lib/idb-utility.js.js"></script>
 <script type="text/javascript" src="js/bundle.js"></script></body>
 
 </html>

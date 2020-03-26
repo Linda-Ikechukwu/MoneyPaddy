@@ -12,7 +12,10 @@ export const budgetController = (function (budgetCtl, uiCtl) {
     document.querySelector(domElements.addMobileButton).addEventListener('click', uiCtl.displayMobileForm);
 
     //Remove overlay and overlay form when overlay is clicked
-    document.querySelector(domElements.overlay).addEventListener('click', uiCtl.removeOverlay);
+    document.querySelector(domElements.overlay).addEventListener('click', () => {
+      uiCtl.removeOverlay();
+      uiCtl.clearFormFields();
+    });
 
     //Event listner for the desktop add key
     document.querySelector(domElements.addBtnDesktop).addEventListener('click', addItemToUI);
@@ -22,7 +25,7 @@ export const budgetController = (function (budgetCtl, uiCtl) {
     document.querySelector(domElements.overlayFormAdd).addEventListener('click', addItemToUI);
 
     //event listener for the enter key
-    document.addEventListener('keypress', function (event) {
+    document.addEventListener('keypress', (event) => {
       if (event.keyCode === 13 || event.which === 13) {
         addItemToUI();
       }
@@ -35,7 +38,7 @@ export const budgetController = (function (budgetCtl, uiCtl) {
     document.querySelector(domElements.settingsIcon).addEventListener('click', uiCtl.shSettingsBody);
 
     //update user currency symbol on click
-    document.querySelector(domElements.selectCurrency).addEventListener('change', uiCtl.getUserCurrency);
+    document.querySelector(domElements.selectCurrency).addEventListener('change', uiCtl.setUserCurrency);
   }
 
   const updateBalance = function () {
@@ -59,30 +62,20 @@ export const budgetController = (function (budgetCtl, uiCtl) {
     uiCtl.displayPercentages(percentages);
   }
 
-  const deferPrompt = () => {
-    
-    //Show pwa install banner
-    /*if (deferedPrompt) {
-      deferedPrompt.prompt();
-
-      deferedPrompt.userChoice.then(choice => {
-        if (choice.outcome === 'dismissed') {
-          console.log('User canceled Installation');
-        } else {
-          console.log('User added to home screen');
-        }
-      });
-      deferedPrompt = null;
-    }*/
-
-  }
-
-  //Function merges the activities of the uiController and budgetController to add elements to the UI
+ //Function merges the activities of the uiController and budgetController to add elements to the UI
   const addItemToUI = function () {
+
+    //Check if app is installed and alert user to install
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      return;
+    }else{
+      alert('This app works better when installed. Add to Home Screen from browser menu');
+    }
+
     let input, newItem;
 
-    //regular expression test to make sure inputs contain only letters
-    const alphaExp = /^[a-zA-Z]+$/;
+    //regular expression test to make sure inputs to description contain only letters
+    const alphaExp = /^[a-zA-Z_ ]*$/;
     //Get new data object from the the input fields
     input = uiCtl.getInput();
 
@@ -104,14 +97,13 @@ export const budgetController = (function (budgetCtl, uiCtl) {
 
     } else {
       if (window.innerWidth <= 520) {
-        document.querySelector(domElements.errMsgMobile).textContent = `*Please enter a description in words and an amount in numbers greater than 0`;
+        document.querySelector(domElements.errMsgMobile).textContent = `*Please enter a description in just words and an amount in numbers greater than 0`;
       } else {
-        document.querySelector(domElements.errMsg).textContent = `*Please enter a description in words and an amount in numbers greater than 0`;
+        document.querySelector(domElements.errMsg).textContent = `*Please enter a description in just words and an amount in numbers greater than 0`;
       }
 
     }
 
-    //deferPrompt();
 
   }
 
@@ -142,8 +134,8 @@ export const budgetController = (function (budgetCtl, uiCtl) {
   return {
     init: function () {
       uiCtl.displayDate();
-      setupEventListners();
       uiCtl.getUserCurrency();
+      setupEventListners();
     }
   }
 
