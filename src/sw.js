@@ -6,6 +6,8 @@ const dynamicCacheName = 'dynamic-1';
 const staticFiles = [
     './',
     './js/bundle.js',
+    './lib/idb.js',
+    './lib/idb-utility.js',
     './css/app.css',
     './app.html',
     './idb.js',
@@ -90,4 +92,37 @@ self.addEventListener('fetch', event => {
         );
     }
 
+});
+
+//Display push message
+self.addEventListener('push', (event) => {
+    console.log('[Service Worker] Push Received.');
+    console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
+  
+    const title = 'You havent recorded anything in 20 hours!!';
+    const options = {
+      body: 'Click to input an expense or income',
+      icon: './icons/96.png',
+      badge: './icons/96.png',
+    };
+  
+    event.waitUntil(self.registration.showNotification(title, options));
+});
+
+//Open app or new window on notification click
+self.addEventListener('notificationclick', event => {
+    const rootUrl = new URL('/', location).href;
+    event.notification.close();
+    // Enumerate windows, and call window.focus(), or open a new one.
+    event.waitUntil(
+      clients.matchAll().then(matchedClients => {
+        for (let client of matchedClients) {
+          if (client.url === rootUrl) {
+            return client.focus();
+          }
+        }
+        return clients.openWindow(rootUrl)
+        .then(client => client.focus());
+      })
+    );
 });

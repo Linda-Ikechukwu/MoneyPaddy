@@ -1,5 +1,5 @@
 
-export const budgetModel= (function() {
+export const appModel= (function() {
  
     //constructor for the Expenses Data
     class Expense{
@@ -8,6 +8,7 @@ export const budgetModel= (function() {
           this.description = description;
           this.value = value;
           this.percentage = -1;
+          this.time = new Date().getUTCHours();
         }
   
         calcPercentage(totalIncome){
@@ -29,6 +30,7 @@ export const budgetModel= (function() {
         this.id = id;
         this.description = description;
         this.value = value;
+        this.time = new Date().getUTCHours();
       }
     }
   
@@ -107,7 +109,7 @@ export const budgetModel= (function() {
          }
       },
   
-       calcualtePercentages: function(){
+       calculatePercentages: function(){
          data.allItems.expense.forEach(function(current){
            current.calcPercentage(data.totals.income);
          })
@@ -128,7 +130,16 @@ export const budgetModel= (function() {
            totalExpense: data.totals.expense,
            percentage: data.percentage
          }
-       }
+       },
+
+       resetDataObject: function(){
+           data.allItems.expense.length = 0;
+           data.allItems.income.length = 0;
+           data.totals.expense = 0;
+           data.totals.income = 0;
+           data.balance = 0;
+           data.percentage = -1;
+        }
     };
   
 })();

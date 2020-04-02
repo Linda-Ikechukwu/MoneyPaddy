@@ -17,8 +17,8 @@ module.exports = {
     },
     plugins:[
         new HtmlWepbackPlugin({
-            filename: 'app.html',
-            template:'./src/app.html'
+            filename: 'index.html',
+            template:'./src/index.html'
         }),
         new MiniCssExtractPlugin({
             filename: "css/app.css"

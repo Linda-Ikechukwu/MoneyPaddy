@@ -91,3 +91,7 @@ self.addEventListener('fetch', event => {
     }
 
 });
+
+self.addEventListener('notificationclick', function(event) {
+    notification.close()
+})

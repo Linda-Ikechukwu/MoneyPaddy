@@ -1,7 +1,8 @@
 import { domElements } from './base';
+import {configureSubscription} from './pushmessage';
 
 
-export const budgetView = (function () {
+export const appView = (function () {
   //Private function to format numbers
   const formatNumber = function (num) {
     let numSplit, integer, decimal;
@@ -23,15 +24,15 @@ export const budgetView = (function () {
       //if viewport width is less than 520px, read data from the overlay form instead of the desktop form
       if (window.innerWidth <= 520) {
         return {
-          inputType: document.querySelector(domElements.overlayType).value,
-          inputDescription: document.querySelector(domElements.overlayDescription).value,
-          inputValue: parseFloat(document.querySelector(domElements.overlayValue).value)
+          inputType: domElements.overlayType.value,
+          inputDescription: domElements.overlayDescription.value,
+          inputValue: parseFloat(domElements.overlayValue.value)
         }
       } else {
         return {
-          inputType: document.querySelector(domElements.desktopType).value, //will return either 'expense' or 'income'.
-          inputDescription: document.querySelector(domElements.desktopDescription).value,
-          inputValue: parseFloat(document.querySelector(domElements.desktopValue).value)
+          inputType: document.domElements.desktopType.value, //will return either 'expense' or 'income'.
+          inputDescription: domElements.desktopDescription.value,
+          inputValue: parseFloat(domElements.desktopValue.value)
         }
 
       }
@@ -65,25 +66,25 @@ export const budgetView = (function () {
 
     //Function to display the Mobile Form
     displayMobileForm: function () {
-      document.querySelector(domElements.overlay).style.visibility = "visible";
-      document.querySelector(domElements.overlayForm).style.visibility = "visible";
-      document.querySelector(domElements.overlayForm).style.height = "28rem";
+      domElements.overlay.style.visibility = "visible";
+      domElements.overlayForm.style.visibility = "visible";
+      domElements.overlayForm.style.height = "28rem";
     },
 
     //Function to close the Mobile Form and overlay
     removeOverlay: function () {
-      document.querySelector(domElements.overlay).style.visibility = "hidden";
-      document.querySelector(domElements.overlayForm).style.visibility = "hidden";
-      document.querySelector(domElements.overlayForm).style.height = "0";
+      domElements.overlay.style.visibility = "hidden";
+      domElements.overlayForm.style.visibility = "hidden";
+      domElements.overlayForm.style.height = "0";
 
     },
 
     //Display or Hide settings panel on click
     shSettingsBody: function () {
-      document.querySelector(domElements.settingsBody).classList.remove('hidden');
-      document.querySelector(domElements.settingsBody).classList.toggle('close');
-      document.querySelector(domElements.settingsBody).classList.toggle('open');
-      document.querySelector(domElements.settingsBodyContent).classList.toggle('hidden');
+      domElements.settingsBody.classList.remove('hidden');
+      domElements.settingsBody.classList.toggle('close');
+      domElements.settingsBody.classList.toggle('open');
+      domElements.settingsBodyContent.classList.toggle('hidden');
 
     },
 
@@ -91,11 +92,11 @@ export const budgetView = (function () {
       let formFields = [];
 
       if (window.innerWidth <= 520) {
-        formFields = [document.querySelector(domElements.overlayDescription), document.querySelector(domElements.overlayValue)]
-        document.querySelector(domElements.errMsgMobile).textContent = "";
+        formFields = [domElements.overlayDescription, domElements.overlayValue]
+        domElements.errMsgMobile.textContent = "";
       } else {
-        formFields = [document.querySelector(domElements.desktopDescription), document.querySelector(domElements.desktopValue)]
-        document.querySelector(domElements.errMsg).textContent = " ";
+        formFields = [domElements.desktopDescription, domElements.desktopValue]
+        domElements.errMsg.textContent = " ";
       }
 
       formFields.forEach(function (current) {
@@ -109,15 +110,15 @@ export const budgetView = (function () {
       obj.balance > 0 ? type = 'income' : type = 'expense';
       type === 'income' ? sign = '+' : sign = '-';
 
-      document.querySelector(domElements.sign).textContent = sign;
-      document.querySelector(domElements.availableBalance).textContent = formatNumber(obj.balance);
-      document.querySelector(domElements.totalIncome).textContent = formatNumber(obj.totalIncome);
-      document.querySelector(domElements.totalExpense).textContent = formatNumber(obj.totalExpense);
+      domElements.sign.textContent = sign;
+      domElements.availableBalance.textContent = formatNumber(obj.balance);
+      domElements.totalIncome.textContent = formatNumber(obj.totalIncome);
+      domElements.totalExpense.textContent = formatNumber(obj.totalExpense);
 
       if (obj.percentage > 0) {
-        document.querySelector(domElements.totalPercentage).textContent = obj.percentage + '%';
+        domElements.totalPercentage.textContent = obj.percentage + '%';
       } else {
-        document.querySelector(domElements.totalPercentage).textContent = '--';
+        domElements.totalPercentage.textContent = '--';
       }
 
     },
@@ -126,7 +127,7 @@ export const budgetView = (function () {
       let fields;
 
       //Select all expense percentages span and convert the nodelist to an array
-      fields = Array.from(document.querySelectorAll(domElements.percentage));
+      fields = Array.from(domElements.percentages);
 
       //Call the nodelistforeaach function to loop through the fields nodestring
       fields.forEach((field, index) => {
@@ -149,7 +150,7 @@ export const budgetView = (function () {
 
       year = now.getFullYear();
 
-      document.querySelector(domElements.date).textContent = `${months[month]}, ${year}`;
+      domElements.date.textContent = `${months[month]}, ${year}`;
 
     },
 
@@ -158,17 +159,34 @@ export const budgetView = (function () {
     },
 
     setUserCurrency: () => {
-      localStorage.setItem('userCurrency', document.querySelector(domElements.selectCurrency).value);
-      document.querySelector(domElements.userCurrency).innerHTML = localStorage.getItem('userCurrency');
+      localStorage.setItem('userCurrency', domElements.selectCurrency.value);
+      domElements.userCurrency.innerHTML = localStorage.getItem('userCurrency');
     },
 
     getUserCurrency: () => {
       if (localStorage.getItem('userCurrency')) {
-        document.querySelector(domElements.userCurrency).innerHTML = localStorage.getItem('userCurrency');
+        domElements.userCurrency.innerHTML = localStorage.getItem('userCurrency');
       }
       else {
-        document.querySelector(domElements.userCurrency).innerHTML = '&#8358;';
+        domElements.userCurrency.innerHTML = '&#8358;';
       }
+    },
+
+    showNotificationButton: () => {
+      if('Notification' in window){
+        domElements.notifications.classList.remove('hidden')
+        domElements.notifications.classList.add('notification')
+      }
+    },
+
+    askForNotificationPermission : () => {
+      Notification.requestPermission((result) => {
+        if (result !== 'granted') {
+          console.log('No notification permission granted!');
+        } else {
+          configureSubscription();
+        }
+      });
     }
 
   };

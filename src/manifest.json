@@ -33,5 +33,6 @@
     "display":"standalone",
     "background_color":"#e9d10f",
     "theme_color":"#3b4d61",
-    "description":"Keep track of your income and epenses for every month"
+    "description":"Keep track of your income and epenses for every month",
+    "gcm_sender_id": "103953800507"
 }

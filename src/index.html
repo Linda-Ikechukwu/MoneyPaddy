@@ -24,7 +24,7 @@
   <meta name="msapplication-TileColor" content="#e9d10f">
   <meta name="theme-color" content="#3b4d61">
 
-<link href="css/app.css" rel="stylesheet"></head>
+</head>
 
 <body>
   <header>
@@ -105,13 +105,13 @@
             <option value="ZAR">South African Rand &nbsp;&nbsp; (ZAR)</option>
           </select>
         </div>
-        
-        <div class="notification m-top-2">
+
+        <div id="notification" class="hidden m-top-2">
           <span>Enable Notifications? : </span>
-          <input type="radio" id="Yes" name="Notify" value="yes">
-          <label for="male">Yes</label><br>
-          <input type="radio" id="no" name="Notify" value="no">
-          <label for="female">No</label><br>
+          <input type="radio" id="notifyYes" name="Notify" value="yes">
+          <label for="notifyYes">Yes</label><br>
+          <input type="radio" id="notifyNo" name="Notify" value="no" checked>
+          <label for="notifyNo">No</label><br>
         </div>
 
         <div><button class="summary m-top-2">Generate Summary</button></div>
@@ -125,13 +125,16 @@
 
   <!-- TODO: Add SDKs for Firebase products that you want to use
      https://firebase.google.com/docs/web/setup#available-libraries -->
+  <script src="/__/firebase/7.13.1/firebase-messaging.js"></script>
+  <script src="/__/firebase/7.13.1/firebase-database.js"></script>
+  <script src="/__/firebase/7.13.1/firebase-functions.js"></script>
   <script src="/__/firebase/7.12.0/firebase-analytics.js"></script>
 
   <!-- Initialize Firebase -->
   <script src="/__/firebase/init.js"></script>
 
   <script src="./lib/idb.js"></script>
-  <script src="./lib/idb-utility.js.js"></script>
-<script type="text/javascript" src="js/bundle.js"></script></body>
+  <script src="./lib/idb-utility.js"></script>
+</body>
 
 </html>
