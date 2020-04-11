@@ -1,5 +1,5 @@
 //Utility function to convert vapid keys to the standard Unit8Array
-function urlBase64ToUint8Array(base64String) {
+const urlBase64ToUint8Array = (base64String) => {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
     const base64 = (base64String + padding)
       .replace(/\-/g, '+')
@@ -7,7 +7,7 @@ function urlBase64ToUint8Array(base64String) {
     ;
     const rawData = window.atob(base64);
     return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
-  }
+}
 
 //display notification confirmation
 const displayConfirmNotification = () => {
@@ -52,7 +52,6 @@ const displayConfirmNotification = () => {
             }
        })
        .then(newsubscription => {
-           console.log(newsubscription.endpoint)
             return fetch('https://money-paddy.firebaseio.com/subcriptions.json', {
                 method: 'POST',
                 headers: {

@@ -49,10 +49,8 @@
         <input type="text" name="input_description" class="input_description"
           placeholder="Write a description for the Income/Expense"
           onchange="if (this.value == '') {this.placeholder = 'Write a description for the Income/Expense'}">
-        <!--
-       --><input type="text" name="input_amount" class="input_amount" placeholder="Amount">
-        <!--Remove white spaces between elements in the UI
-       --><button type="button" name="add" class="add">
+        <input type="text" name="input_amount" class="input_amount" placeholder="Amount">
+        <button type="button" name="add" class="add">
           <span>&check;</span>
         </button>
       </form>
@@ -125,13 +123,17 @@
 
   <!-- TODO: Add SDKs for Firebase products that you want to use
      https://firebase.google.com/docs/web/setup#available-libraries -->
+  <script src="/__/firebase/7.13.1/firebase-messaging.js"></script>
+  <script src="/__/firebase/7.13.1/firebase-database.js"></script>
+  <script src="/__/firebase/7.13.1/firebase-functions.js"></script>
   <script src="/__/firebase/7.12.0/firebase-analytics.js"></script>
 
   <!-- Initialize Firebase -->
   <script src="/__/firebase/init.js"></script>
 
-  <script src="./lib/idb.js"></script>
-  <script src="./lib/idb-utility.js"></script>
-  <script type="text/javascript" src="js/bundle.js"></script></body>
+  <script src="./js/lib/idb.js"></script>
+  <script src="./js/lib/indexeddb.js"></script>
   
+<script type="text/javascript" src="js/bundle.js"></script></body>
+
 </html>

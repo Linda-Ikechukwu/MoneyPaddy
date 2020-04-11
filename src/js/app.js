@@ -1,32 +1,19 @@
 
-//Store values in database so theyre not lost on reload;
-//Make it PWA
-//if its the end of a month, remove income and expenses from the UI, store it and reset it.
+//Implemet a page for the total income and total expense ish
+
 //importing css for webpack
 import '../css/app.css';
 import { appController } from './controller';
 import { domElements } from './base';
 
+if (!window.indexedDB) {
+    alert('This app will not work properly on your browser as it doesnt support indexeddb');
+}
+
 //Initializing the app
 appController.init();
 
-//Initializing the notifications choice
-function initializeNotificationsRadio() {
-    // Set the initial subscription value
-    swRegistration.pushManager.getSubscription()
-        .then(function (subscription) {
-            isSubscribed = !(subscription === null);
-
-            if (isSubscribed) {
-                domElements.notifyYes.disabled = true;
-                domElements.notifyNo.disabled = true;
-            } else {
-                domElements.notifyYes.disabled = false;
-                domElements.notifyNo.disabled = false;
-            }
-
-        });
-}
+let swRegistration;
 
 //Registering the service worker
 if ('serviceWorker' in navigator) {
@@ -42,12 +29,28 @@ if ('serviceWorker' in navigator) {
 }
 
 
+//Initializing the notifications choice
+function initializeNotificationsRadio() {
+    // Set the initial subscription value
+    swRegistration.pushManager.getSubscription()
+        .then((subscription) => {
+           let isSubscribed = !(subscription === null);
 
-//Dummy fetch
-fetch('https://money-paddy.firebaseio.com/inputs/Expenses.json')
-    .then(function (res) {
-        console.log(res.json());
-    })
+            if (isSubscribed) {
+                domElements.notifyYes.disabled = true;
+                domElements.notifyNo.disabled = true;
+            } else {
+                domElements.notifyYes.disabled = false;
+                domElements.notifyNo.disabled = false;
+            }
+
+        });
+}
+
+
+
+
+
 
 
 

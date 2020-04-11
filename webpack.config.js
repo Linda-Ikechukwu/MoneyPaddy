@@ -37,12 +37,12 @@ module.exports = {
               to: 'icons',
             },
             {
-              from: './src/lib/idb.js',
-              to: 'lib/idb.js',
+              from: './src/js/lib/idb.js',
+              to: 'js/lib/idb.js',
             },
             {
-              from: './src/lib/idb-utility.js',
-              to: 'lib/idb-utility.js',
+              from: './src/js/lib/indexeddb.js',
+              to: 'js/lib/indexeddb.js',
             },
           ]),
     ],

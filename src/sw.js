@@ -1,16 +1,11 @@
-importScripts('./lib/idb.js');
-importScripts('./lib/idb-utility.js');
-
-const staticCacheName = 'static-12';
-const dynamicCacheName = 'dynamic-1';
+const staticCacheName = 'static-45';
 const staticFiles = [
     './',
-    './js/bundle.js',
-    './lib/idb.js',
-    './lib/idb-utility.js',
     './css/app.css',
-    './app.html',
-    './idb.js',
+    './index.html',
+    './js/lib/idb.js',
+    './js/lib/indexeddb.js',
+    './js/bundle.js',
     'https://fonts.googleapis.com/css?family=Josefin+Sans:400,600,700|Josefin+Slab&display=swap',
 ]
 
@@ -31,7 +26,7 @@ self.addEventListener('activate', event => {
 
     event.waitUntil(caches.keys().then(cacheNames => {
         Promise.all(cacheNames.map(thisCacheName => {
-            if (thisCacheName !== (staticCacheName || dynamicCacheName)) {
+            if (thisCacheName !== staticCacheName) {
 
                 console.log("deleting cache files from", thisCacheName)
 
@@ -45,52 +40,27 @@ self.addEventListener('activate', event => {
 
 //hijacking requests
 self.addEventListener('fetch', event => {
-    var url = 'https://money-paddy.firebaseio.com/inputs/Expenses';
-    if (event.request.url.indexOf(url) > -1) {
-        event.respondWith(fetch(event.request)
-            .then( (res) => {
-                let clonedRes = res.clone();
-                clearDatabase('expenses')
-                   .then( () => {
-                      return clonedRes.json();
-                    })
-                    .then( (data) =>{
-                        for (let key in data) {
-                            writeData('expenses', data[key]);
-                        }
-                    })
-                
-                return res;
-            })
-        );
-    } else {
-        event.respondWith(
-            caches.match(event.request)
-                .then(response => {
-                    // Cache hit - return response
-                    if (response) {
-                        return response;
-                    }
 
-                    //  Clone the request. 
-                    return fetch(event.request.clone()).then(response => {
-                        // Check if we received a valid response
-                        if (!response || response.status !== 200 || response.type !== 'basic') {
-                            return response;
-                        }
-                        let responseClone = response.clone();
-                        // Clone the response
-                        caches.open(dynamicCacheName)
-                            .then(function (cache) {
-                                cache.put(event.request, responseClone);
-                            });
-
-                        return response;
-                    }
-                    );
+    event.respondWith(
+        caches.match(event.request)
+          .then(function (response) {
+            if (response) {
+              return response;
+            } else {
+              return fetch(event.request)
+                .then(function (res) {
+                  return caches.open(staticCacheName)
+                    .then(function (cache) {
+                      cache.put(event.request.url, res.clone());
+                      return res;
+                    })
                 })
-        );
-    }
+                .catch(function (err) {
+                 console.log(err);
+                });
+            }
+          })
+    );
 
 });
 
@@ -98,14 +68,14 @@ self.addEventListener('fetch', event => {
 self.addEventListener('push', (event) => {
     console.log('[Service Worker] Push Received.');
     console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
-  
-    const title = 'You havent recorded anything in 20 hours!!';
+
+    const title = 'You havent recorded anything over 5 hours!!';
     const options = {
-      body: 'Click to input an expense or income',
-      icon: './icons/96.png',
-      badge: './icons/96.png',
+        body: 'Click to add an expense or income',
+        icon: './icons/96.png',
+        badge: './icons/96.png',
     };
-  
+
     event.waitUntil(self.registration.showNotification(title, options));
 });
 
@@ -115,14 +85,53 @@ self.addEventListener('notificationclick', event => {
     event.notification.close();
     // Enumerate windows, and call window.focus(), or open a new one.
     event.waitUntil(
-      clients.matchAll().then(matchedClients => {
-        for (let client of matchedClients) {
-          if (client.url === rootUrl) {
-            return client.focus();
-          }
-        }
-        return clients.openWindow(rootUrl)
-        .then(client => client.focus());
-      })
+        clients.matchAll().then(matchedClients => {
+            for (let client of matchedClients) {
+                if (client.url === rootUrl) {
+                    return client.focus();
+                }
+            }
+            return clients.openWindow(rootUrl)
+                .then(client => client.focus());
+        })
     );
+});
+
+self.addEventListener('sync', function (event) {
+    console.log('[Service Worker] Background syncing', event);
+    if (event.tag === 'sync-new-posts') {
+        console.log('[Service Worker] Syncing new Posts');
+        event.waitUntil(
+            readAllData('expenses-sync')
+                .then(function (data) {
+                    for (var dt of data) {
+                        fetch('https://us-central1-money-paddy.cloudfunctions.net/syncExpenseData', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                timestamp: Date.now(),
+                                value: input.inputValue,
+                                description: input.inputDescription
+                            })
+                        })
+                            .then(function (res) {
+                                console.log('Sent data', res);
+                                if (res.ok) {
+                                    res.json()
+                                        .then(function (resData) {
+                                            deleteData('expenses-sync', resData.id);
+                                        });
+                                }
+                            })
+                            .catch(function (err) {
+                                console.log('Error while sending data', err);
+                            });
+                    }
+
+                })
+        );
+    }
 });

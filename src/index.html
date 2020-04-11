@@ -49,10 +49,8 @@
         <input type="text" name="input_description" class="input_description"
           placeholder="Write a description for the Income/Expense"
           onchange="if (this.value == '') {this.placeholder = 'Write a description for the Income/Expense'}">
-        <!--
-       --><input type="text" name="input_amount" class="input_amount" placeholder="Amount">
-        <!--Remove white spaces between elements in the UI
-       --><button type="button" name="add" class="add">
+        <input type="text" name="input_amount" class="input_amount" placeholder="Amount">
+        <button type="button" name="add" class="add">
           <span>&check;</span>
         </button>
       </form>
@@ -133,8 +131,9 @@
   <!-- Initialize Firebase -->
   <script src="/__/firebase/init.js"></script>
 
-  <script src="./lib/idb.js"></script>
-  <script src="./lib/idb-utility.js"></script>
+  <script src="./js/lib/idb.js"></script>
+  <script src="./js/lib/indexeddb.js"></script>
+  
 </body>
 
 </html>

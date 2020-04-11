@@ -1,6 +1,10 @@
+
 import { domElements } from './base';
 import { appModel } from './model';
 import { appView } from './view';
+
+
+
 
 //The Controller. Combines functions from the view and model
 //----------------------------------------------------------
@@ -18,24 +22,24 @@ export const appController = (function (modelCtl, viewCtl) {
     });
 
     //Event listner for the desktop add key
-    domElements.addBtnDesktop.addEventListener('click', addItemToUI);
+    domElements.addBtnDesktop.addEventListener('click', addItem);
 
 
     //close overlay form and add form contents to UI
-    domElements.overlayFormAdd.addEventListener('click', addItemToUI);
+    domElements.overlayFormAdd.addEventListener('click', addItem);
 
     //event listener for the enter key
     document.addEventListener('keypress', (event) => {
       if (event.keyCode === 13 || event.which === 13) {
-        addItemToUI();
+        addItem();
       }
     });
 
     //delete list 
-    domElements.main.addEventListener('click', deleteFromUI);
+    domElements.main.addEventListener('click', deleteItem);
 
     //show settings body on click
-    domElements.settingsIcon.addEventListener('click', viewCtl.shSettingsBody);
+    domElements.settingsIcon.addEventListener('click', viewCtl.showSettingsBody);
 
     //update user currency symbol on click
     domElements.selectCurrency.addEventListener('change', viewCtl.setUserCurrency);
@@ -43,6 +47,7 @@ export const appController = (function (modelCtl, viewCtl) {
     //request notification permission if yes radio button is clicked
     domElements.notifyYes.addEventListener('click', () => {
       if (domElements.notifyYes.checked) {
+        localStorage.setItem('NotificationChoice', 'yes');
         domElements.notifyYes.disabled = true;
         domElements.notifyNo.disabled = true;
         viewCtl.askForNotificationPermission();
@@ -50,29 +55,54 @@ export const appController = (function (modelCtl, viewCtl) {
     })
   }
 
+  //function to sync posts to firebase to store timestamp and enable push notifications.
+  const syncExpenseData = function (input) {
+    if ('serviceWorker' in navigator && 'SyncManager' in window) {
+      navigator.serviceWorker.ready
+        .then(function (sw) {
+          var post = {
+            timestamp: Date.now(),
+            value: input.inputValue,
+            description: input.inputDescription
+          };
+          writeData('expenses-sync', post)
+            .then(function () {
+              return sw.sync.register('sync-new-inputs');
+            })
+            .catch(function (err) {
+              console.log(err);
+            });
+        });
+    } else {
+      fetch('https://us-central1-money-paddy.cloudfunctions.net/syncExpenseData', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          timestamp: Date.now(),
+          value: input.inputValue,
+          description: input.inputDescription
+        })
+      })
+        .then(function (res) {
+          console.log('Sent data', res);
+        })
+    }
+  }
+
   const updateBalance = function () {
     //Calculate the balance
     modelCtl.calculateBalance();
     //Return the balance
-    var balance = modelCtl.getBalance();
+    let balance = modelCtl.getBalance();
     //Display the balance on the UI
     viewCtl.displayBalance(balance);
 
   }
 
-  const updatePercentages = function () {
-    //calculate percentage
-    modelCtl.calculatePercentages();
-
-    //Read percentages from the budget controller
-    var percentages = modelCtl.getPercentages();
-
-    //Update UI with the new percentages
-    viewCtl.displayPercentages(percentages);
-  }
-
-  //Function merges the activities of the uiController and budgetController to add elements to the UI
-  const addItemToUI = function () {
+  const addItem = function () {
 
     let input, newItem;
 
@@ -81,21 +111,26 @@ export const appController = (function (modelCtl, viewCtl) {
     //Get new data object from the the input fields
     input = viewCtl.getInput();
 
+    if(input.inputType === 'expense'){
+      syncExpenseData(input);
+    }
+
     //check that input fields are not empty and correct data is entered.
     if (input.inputDescription.match(alphaExp) && input.inputDescription !== " " && !isNaN(input.inputValue) && input.inputValue > 0) {
       //clear error message
       domElements.errMsg.textContent = " ";
       domElements.errMsgMobile.textContent = " ";
       //Add new data object to the budget controller
-      newItem = modelCtl.addToArray(input.inputType, input.inputDescription, input.inputValue)
-      //add item to UI
-      viewCtl.addItemToList(newItem, input.inputType);
+      newItem = modelCtl.addToDB(input.inputType, input.inputDescription, input.inputValue);
       //clear form fields
       viewCtl.clearFormFields();
       //Calculte and dispaly balance
       updateBalance();
-      //Calculate and update percentages
-      updatePercentages();
+      //add item to UI
+      viewCtl.addItemToUI(newItem, input.inputType);
+      //Update Percentages
+      viewCtl.calculateAndDisplayPercentages();
+      
 
     } else {
       if (window.innerWidth <= 520) {
@@ -109,7 +144,7 @@ export const appController = (function (modelCtl, viewCtl) {
 
   }
 
-  const deleteFromUI = function (event) {
+  const deleteItem = function (event) {
     var itemID, splitID, type, Id;
     //check if target of the event delegation on the main element is a delete button
     if (event.target.className === 'add_remove') {
@@ -120,10 +155,10 @@ export const appController = (function (modelCtl, viewCtl) {
       Id = parseInt(splitID[1]);
 
       //Delete the item from the data structure
-      modelCtl.deleteItem(type, Id);
+      modelCtl.deleteFromDB(type, Id);
 
       //Delete item from the UI
-      viewCtl.deletefromList(itemID);
+      viewCtl.deleteFromUI(itemID);
 
       //Recalculate and update balance
       updateBalance();
@@ -131,9 +166,22 @@ export const appController = (function (modelCtl, viewCtl) {
       //Recalculate and update percentages
       updatePercentages();
     }
-  },
+  }
 
-  const clearUIOnLastDay = () => {
+  //Persist Data from Indexeddb and local storage on page reload
+  const loadUIFromDB = function(){
+    viewCtl.displayDate();
+    viewCtl.getUserCurrency();
+    let balance = modelCtl.getBalance();
+    viewCtl.displayBalance(balance);
+    viewCtl.loadIncomeFromIDB();
+    viewCtl.loadExpenseFromIDB();
+    //updatePercentages();
+    viewCtl.ifShowNotificationRadio();
+  }
+
+
+  const clearUIOnLastDayOfMonth = () => {
 
     let presentDay = new Date().getUTCDate();
     let presentMonth = new Date().getUTCMonth();
@@ -145,25 +193,45 @@ export const appController = (function (modelCtl, viewCtl) {
       //Clear UI
       domElements.sign.textContent = ' ';
       domElements.availableBalance.textContent = '0';
-      domElements.totalIncome.textContent ='0' ;
+      domElements.totalIncome.textContent = '0';
       domElements.totalExpense.textContent = '0';
       domElements.totalPercentage.textContent = '--';
       domElements.incomeList = " ";
       domElements.expenseList = " ";
-      //Clear Data Object
-      modelCtl.resetDataObject();
-      //Clear IndexedDB
+      //Clear Local Storage
+      modelCtl.resetLocalStorage();
+      //Clear IndexedDBs
+      clearDatabase('expense');
+      clearDatabase('income');
+      clearDatabase('expenses-sync');
+
+
     }
 
-  },
+  }
 
   return {
     init: function () {
-      viewCtl.displayDate();
-      viewCtl.getUserCurrency();
-      viewCtl.showNotificationButton();
+      loadUIFromDB();
       setupEventListners();
-      clearUIOnLastDay();
+      clearUIOnLastDayOfMonth();
+      writeData('expense', {
+        id: 1, description: "social media ish", value: 890, percentage:10
+      })
+      writeData('expense', {
+        id: 2, description: "social media ish", value: 890, percentage:20
+      })
+      
+      //Making sure that the expense ul has been loaded to the DOM,
+      window.addEventListener('load', () =>{
+        let i = setInterval(function (){
+          if(domElements.expenseList.getElementsByTagName('li').length >= 1){
+            clearInterval(i);
+            viewCtl.calculateAndDisplayPercentages();
+          }
+        },200)
+      } )
+      
     }
   }
 

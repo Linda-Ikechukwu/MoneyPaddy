@@ -2,6 +2,8 @@ import { domElements } from './base';
 import {configureSubscription} from './pushmessage';
 
 
+
+
 export const appView = (function () {
   //Private function to format numbers
   const formatNumber = function (num) {
@@ -14,7 +16,7 @@ export const appView = (function () {
     //Assign the interger and decimal sides to variables. format integer to add commas
     integer = parseInt(numSplit[0]).toLocaleString();
     decimal = numSplit[1];
-    //if type of num is expense return - and the formatted number, else return +, then the formatted number
+  
     return `${integer}.${decimal}`;
   };
 
@@ -30,7 +32,7 @@ export const appView = (function () {
         }
       } else {
         return {
-          inputType: document.domElements.desktopType.value, //will return either 'expense' or 'income'.
+          inputType: domElements.desktopType.value, //will return either 'expense' or 'income'.
           inputDescription: domElements.desktopDescription.value,
           inputValue: parseFloat(domElements.desktopValue.value)
         }
@@ -40,7 +42,7 @@ export const appView = (function () {
     },
 
     //Publicly accessible method which accepts the resulting object; newItem and its type
-    addItemToList: function (obj, type) {
+    addItemToUI: function (obj, type) {
       var newHtml, element;
       //Create html templates based on each input type i.e income or expenses
       if (type === 'income') {
@@ -48,20 +50,76 @@ export const appView = (function () {
         newHtml = `<li id="${type}-${obj.id}">
                     <span class="add_remove">&times</span>
                     <span class="add_description">${obj.description}</span>
-                    <span class="add_amount"> + ${formatNumber(obj.value, type)}</span>
+                    <span class="add_amount"> + ${formatNumber(obj.value)}</span>
                   </li>`
+        
       } else if (type === 'expense') {
         element = domElements.expenseList;
         newHtml = `<li id="${type}-${obj.id}">
                     <span class="add_remove">&times</span>
                     <span class="add_description">${obj.description}</span>
-                    <span class="add_amount"> - ${formatNumber(obj.value, type)}</span>
+                    <span class="add_amount"> - ${formatNumber(obj.value)}</span>
                     <span class="add_percentage">- %per%</span>
                   </li>`
       }
 
       //Insert newHtml to either an expense list or income list
-      document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
+      element.insertAdjacentHTML('afterbegin', newHtml);
+    },
+
+    calculateAndDisplayPercentages: function(){
+      let totalIncome = parseInt(localStorage.getItem('income'));
+      //get all the lis in expenses ul
+      let expenses = domElements.expenseList.getElementsByTagName('li');
+
+      for(let i = 0; i < expenses.length; i++){
+        let string = expenses[i].getElementsByTagName('span')[2].textContent.trim();
+        let stringSplit = string.split(' ');
+        let amount = parseInt(stringSplit[1]);
+        let percentage = 0;
+
+        if (totalIncome > 0) {
+          percentage = Math.round((amount / totalIncome) * 100);
+        } else {
+          percentage = -1;
+        }
+        
+        expenses[i].getElementsByTagName('span')[3].textContent = percentage;
+      }
+    },
+
+    loadIncomeFromIDB: function(){
+      let newIncome
+      readData('income').then(data => {
+        if(data){
+          for (var i = 0; i < data.length; i++) {
+            newIncome = `<li id="income-${data[i].id}">
+                <span class="add_remove">&times</span>
+                <span class="add_description">${data[i].description}</span>
+                <span class="add_amount"> + ${formatNumber(data[i].value)}</span>
+              </li>`
+  
+            domElements.incomeList.insertAdjacentHTML('afterbegin', newIncome); 
+          }
+        }
+      })
+    },
+
+    loadExpenseFromIDB: function(){
+      readData('expense').then(data => {
+        if(data){
+          for (var i = 0; i < data.length; i++) {
+            let newExpense = `<li id="expense-${data[i].id}">
+                <span class="add_remove">&times</span>
+                <span class="add_description">${data[i].description}</span>
+                <span class="add_amount"> - ${formatNumber(data[i].value)}</span>
+                <span class="add_percentage">- %per%</span>
+              </li>`
+            
+            domElements.expenseList.insertAdjacentHTML('afterbegin', newExpense);
+          }
+        }
+      })
     },
 
     //Function to display the Mobile Form
@@ -80,7 +138,7 @@ export const appView = (function () {
     },
 
     //Display or Hide settings panel on click
-    shSettingsBody: function () {
+    showSettingsBody: function () {
       domElements.settingsBody.classList.remove('hidden');
       domElements.settingsBody.classList.toggle('close');
       domElements.settingsBody.classList.toggle('open');
@@ -106,20 +164,26 @@ export const appView = (function () {
     },
 
     displayBalance: function (obj) {
-      let type, sign;
-      obj.balance > 0 ? type = 'income' : type = 'expense';
-      type === 'income' ? sign = '+' : sign = '-';
-
-      domElements.sign.textContent = sign;
-      domElements.availableBalance.textContent = formatNumber(obj.balance);
-      domElements.totalIncome.textContent = formatNumber(obj.totalIncome);
-      domElements.totalExpense.textContent = formatNumber(obj.totalExpense);
-
-      if (obj.percentage > 0) {
-        domElements.totalPercentage.textContent = obj.percentage + '%';
-      } else {
-        domElements.totalPercentage.textContent = '--';
+      //Check if respective localstorages exist, then read data
+      if((localStorage.hasOwnProperty('Balance')) && (localStorage.hasOwnProperty('income')) && (localStorage.hasOwnProperty('expense')) && (localStorage.hasOwnProperty('Percentage'))){
+        let sign;
+        obj.balance > 0 ? sign = '+' : sign = '-';
+  
+        domElements.sign.textContent = sign;
+        domElements.availableBalance.textContent = formatNumber(obj.balance);
+        domElements.totalIncome.textContent = formatNumber(obj.totalIncome);
+        domElements.totalExpense.textContent = formatNumber(obj.totalExpense);
+  
+        obj.percentage > 0 ? domElements.totalPercentage.textContent = obj.percentage + '%' : domElements.totalPercentage.textContent = '--';
+      
+      }else{
+        domElements.sign.textContent = ' ';
+        domElements.availableBalance.textContent = '0';
+        domElements.totalIncome.textContent = '0';
+        domElements.totalExpense.textContent = '0';
       }
+      
+      
 
     },
 
@@ -154,7 +218,7 @@ export const appView = (function () {
 
     },
 
-    deletefromList: (selectorID) => {
+    deleteFromUI: (selectorID) => {
       document.getElementById(selectorID).remove();
     },
 
@@ -164,7 +228,7 @@ export const appView = (function () {
     },
 
     getUserCurrency: () => {
-      if (localStorage.getItem('userCurrency')) {
+      if (localStorage.hasOwnProperty('userCurrency')) {
         domElements.userCurrency.innerHTML = localStorage.getItem('userCurrency');
       }
       else {
@@ -172,10 +236,11 @@ export const appView = (function () {
       }
     },
 
-    showNotificationButton: () => {
-      if('Notification' in window){
-        domElements.notifications.classList.remove('hidden')
-        domElements.notifications.classList.add('notification')
+    ifShowNotificationRadio: ()=> {
+      let userNotificationChoice = localStorage.getItem('NotificationChoice');
+      if('Notification' in window && userNotificationChoice === 'yes'){
+        domElements.notifications.classList.add('hidden');
+        domElements.notifications.classList.remove('notification');
       }
     },
 
