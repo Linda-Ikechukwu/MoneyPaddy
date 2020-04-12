@@ -18,8 +18,7 @@ const openIndexdb = idb.open("inputs", 2, (db) => {
 const writeData = async (obStore, data) => {
   try {
     const dbPromise = await openIndexdb;
-    const tx = await dbPromise.transaction(obStore, "readwrite");
-    console.log("Data", JSON.stringify(data));
+    const tx =await dbPromise.transaction(obStore, "readwrite");
     await tx
       .objectStore(obStore)
       .put(data);
@@ -45,9 +44,9 @@ const readData = async (obStore) => {
 //Clear Data
 const clearDatabase = async (obStore) => {
   try {
+    const dbPromise = await openIndexdb;
     const tx = await dbPromise.transaction(obStore, "readwrite");
-    const store = tx.objectStore(obStore);
-    store.clear();
+    await tx.objectStore(obStore).clear();
     return tx.complete;
   } catch (error) {
     console.error(error);
@@ -58,9 +57,9 @@ const clearDatabase = async (obStore) => {
 //Delete one data entry instance
 const deleteData = async (obStore, id) => {
   try {
+    const dbPromise = await openIndexdb;
     const tx = await dbPromise.transaction(obStore, "readwrite");
-    const store = tx.objectStore(obStore);
-    store.delete(id);
+    await tx.objectStore(obStore).delete(id);
     return tx.complete;
   } catch (error) {
     console.error(error);
