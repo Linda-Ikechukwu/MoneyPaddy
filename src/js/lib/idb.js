@@ -19,6 +19,7 @@
 
   function promisifyRequestCall(obj, method, args) {
     var request;
+    console.log(obj, method, args);
     var p = new Promise(function(resolve, reject) {
       request = obj[method].apply(obj, args);
       promisifyRequest(request).then(resolve, reject);
@@ -28,12 +29,11 @@
     return p;
   }
 
-  function promisifyCursorRequestCall(obj, method, args) {
-    var p = promisifyRequestCall(obj, method, args);
-    return p.then(function(value) {
-      if (!value) return;
-      return new Cursor(value, p.request);
-    });
+  async function promisifyCursorRequestCall(obj, method, args) {
+    const value = await promisifyRequestCall(obj, method, args);
+    if (!value)
+      return;
+    return new Cursor(value, p.request);
   }
 
   function proxyProperties(ProxyClass, targetProp, properties) {
@@ -120,16 +120,15 @@
   // proxy 'next' methods
   ['advance', 'continue', 'continuePrimaryKey'].forEach(function(methodName) {
     if (!(methodName in IDBCursor.prototype)) return;
-    Cursor.prototype[methodName] = function() {
+    Cursor.prototype[methodName] = async function() {
       var cursor = this;
       var args = arguments;
-      return Promise.resolve().then(function() {
-        cursor._cursor[methodName].apply(cursor._cursor, args);
-        return promisifyRequest(cursor._request).then(function(value) {
-          if (!value) return;
-          return new Cursor(value, cursor._request);
-        });
-      });
+      await Promise.resolve();
+      cursor._cursor[methodName].apply(cursor._cursor, args);
+      const value = await promisifyRequest(cursor._request);
+      if (!value)
+        return;
+      return new Cursor(value, cursor._request);
     };
   });
 
@@ -282,9 +281,9 @@
   });
 
   var exp = {
-    open: function(name, version, upgradeCallback) {
+    open: async function(name, version, upgradeCallback) {
       var p = promisifyRequestCall(indexedDB, 'open', [name, version]);
-      var request = p.request;
+      var request = await p.request;
 
       request.onupgradeneeded = function(event) {
         if (upgradeCallback) {
@@ -292,9 +291,8 @@
         }
       };
 
-      return p.then(function(db) {
-        return new DB(db);
-      });
+      const db_1 = await p;
+      return new DB(db_1);
     },
     delete: function(name) {
       return promisifyRequestCall(indexedDB, 'deleteDatabase', [name]);

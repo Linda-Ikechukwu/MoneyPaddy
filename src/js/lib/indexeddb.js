@@ -1,61 +1,69 @@
 //For IndexedDB
 
 //Create/Initialize our indexeddb databases
-const dbPromise = idb.open('inputs', 2, (db) => {
-    if (!db.objectStoreNames.contains('expense')) {
-        db.createObjectStore('expense', { keyPath: 'id' });
-        //db.createObjectStore('incomes', {keyPath: 'id'});
-    }
-    if (!db.objectStoreNames.contains('income')) {
-        db.createObjectStore('income', { keyPath: 'id' });
-    }
-    if (!db.objectStoreNames.contains('expenses-sync')) {
-        db.createObjectStore('expenses-sync', { keyPath: 'timestamp' });
-    }
-
+const openIndexdb = idb.open("inputs", 2, (db) => {
+  if (!db.objectStoreNames.contains("expense")) {
+    db.createObjectStore("expense", { keyPath: "id" });
+    //db.createObjectStore('incomes', {keyPath: 'id'});
+  }
+  if (!db.objectStoreNames.contains("income")) {
+    db.createObjectStore("income", { keyPath: "id" });
+  }
+  if (!db.objectStoreNames.contains("expenses-sync")) {
+    db.createObjectStore("expenses-sync", { keyPath: "timestamp" });
+  }
 });
 
-
-//Write Data  
-const writeData = (obStore, data) => {
-    return dbPromise
-        .then((db) => {
-            const tx = db.transaction(obStore, 'readwrite');
-            const store = tx.objectStore(obStore);
-            store.put(data);
-            return tx.complete;
-        });
-}
+//Write Data
+const writeData = async (obStore, data) => {
+  try {
+    const dbPromise = await openIndexdb;
+    const tx = await dbPromise.transaction(obStore, "readwrite");
+    console.log("Data", JSON.stringify(data));
+    await tx
+      .objectStore(obStore)
+      .put(data);
+    return tx.complete;
+  } catch (error) {
+    console.error("Put Error", error);
+    return error;
+  }
+};
 
 //Read All Data
-const readData = (obStore) => {
-    return dbPromise
-        .then(db => {
-            const tx = db.transaction(obStore, 'readonly');
-            const store = tx.objectStore(obStore);
-            return store.getAll();
-        })
-}
+const readData = async (obStore) => {
+  try {
+    const dbPromise = await openIndexdb;
+    const trnx = await dbPromise.transaction(obStore, "readonly");
+    return await trnx.objectStore(obStore).getAll();
+  } catch (error) {
+    console.error(error);
+    return error;
+  }
+};
 
 //Clear Data
-const clearDatabase = (obStore) => {
-    return dbPromise
-        .then(db => {
-            const tx = db.transaction(obStore, 'readwrite');
-            const store = tx.objectStore(obStore);
-            store.clear();
-            return tx.complete;
-        })
-}
+const clearDatabase = async (obStore) => {
+  try {
+    const tx = await dbPromise.transaction(obStore, "readwrite");
+    const store = tx.objectStore(obStore);
+    store.clear();
+    return tx.complete;
+  } catch (error) {
+    console.error(error);
+    return error;
+  }
+};
 
 //Delete one data entry instance
-const deleteData = (obStore, id) => {
-    return dbPromise
-        .then(db => {
-            const tx = db.transaction(obStore, 'readwrite');
-            const store = tx.objectStore(obStore);
-            store.delete(id);
-            return tx.complete;
-        })
-
-}
+const deleteData = async (obStore, id) => {
+  try {
+    const tx = await dbPromise.transaction(obStore, "readwrite");
+    const store = tx.objectStore(obStore);
+    store.delete(id);
+    return tx.complete;
+  } catch (error) {
+    console.error(error);
+    return error;
+  }
+};

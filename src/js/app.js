@@ -16,7 +16,7 @@ appController.init();
 let swRegistration;
 
 //Registering the service worker
-if ('serviceWorker' in navigator) {
+/* if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js')
         .then((swreg) => {
             swRegistration = swreg;
@@ -27,7 +27,7 @@ if ('serviceWorker' in navigator) {
             console.error('Service Worker Error', error);
         });
 }
-
+ */
 
 //Initializing the notifications choice
 function initializeNotificationsRadio() {

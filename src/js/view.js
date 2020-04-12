@@ -1,5 +1,6 @@
 import { domElements } from './base';
-import {configureSubscription} from './pushmessage';
+import { configureSubscription } from './pushmessage';
+// import {} from './lib/indexeddb'
 
 
 
@@ -42,23 +43,26 @@ export const appView = (function () {
     },
 
     //Publicly accessible method which accepts the resulting object; newItem and its type
-    addItemToUI: function (obj, type) {
+    addItemToUI: async function (obj, type) {
       var newHtml, element;
       //Create html templates based on each input type i.e income or expenses
+      const data = await obj
       if (type === 'income') {
+        console.log(obj, type);
         element = domElements.incomeList;
-        newHtml = `<li id="${type}-${obj.id}">
+        newHtml = `<li id="${type}-${data.id}">
                     <span class="add_remove">&times</span>
-                    <span class="add_description">${obj.description}</span>
-                    <span class="add_amount"> + ${formatNumber(obj.value)}</span>
+                    <span class="add_description">${data.description}</span>
+                    <span class="add_amount"> + ${formatNumber(data.value)}</span>
                   </li>`
         
       } else if (type === 'expense') {
         element = domElements.expenseList;
-        newHtml = `<li id="${type}-${obj.id}">
+        console.log(obj, type);
+        newHtml = `<li id="${type}-${data.id}">
                     <span class="add_remove">&times</span>
-                    <span class="add_description">${obj.description}</span>
-                    <span class="add_amount"> - ${formatNumber(obj.value)}</span>
+                    <span class="add_description">${data.description}</span>
+                    <span class="add_amount"> - ${formatNumber(data.value)}</span>
                     <span class="add_percentage">- %per%</span>
                   </li>`
       }
