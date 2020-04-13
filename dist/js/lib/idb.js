@@ -1,15 +1,3 @@
-/*
-Copyright 2016 Google Inc.
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-    http://www.apache.org/licenses/LICENSE-2.0
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
 'use strict';
 
 (function() {
@@ -31,6 +19,7 @@ limitations under the License.
 
   function promisifyRequestCall(obj, method, args) {
     var request;
+    console.log(obj, method, args);
     var p = new Promise(function(resolve, reject) {
       request = obj[method].apply(obj, args);
       promisifyRequest(request).then(resolve, reject);
@@ -40,12 +29,11 @@ limitations under the License.
     return p;
   }
 
-  function promisifyCursorRequestCall(obj, method, args) {
-    var p = promisifyRequestCall(obj, method, args);
-    return p.then(function(value) {
-      if (!value) return;
-      return new Cursor(value, p.request);
-    });
+  async function promisifyCursorRequestCall(obj, method, args) {
+    const value = await promisifyRequestCall(obj, method, args);
+    if (!value)
+      return;
+    return new Cursor(value, p.request);
   }
 
   function proxyProperties(ProxyClass, targetProp, properties) {
@@ -53,6 +41,9 @@ limitations under the License.
       Object.defineProperty(ProxyClass.prototype, prop, {
         get: function() {
           return this[targetProp][prop];
+        },
+        set: function(val) {
+          this[targetProp][prop] = val;
         }
       });
     });
@@ -129,16 +120,15 @@ limitations under the License.
   // proxy 'next' methods
   ['advance', 'continue', 'continuePrimaryKey'].forEach(function(methodName) {
     if (!(methodName in IDBCursor.prototype)) return;
-    Cursor.prototype[methodName] = function() {
+    Cursor.prototype[methodName] = async function() {
       var cursor = this;
       var args = arguments;
-      return Promise.resolve().then(function() {
-        cursor._cursor[methodName].apply(cursor._cursor, args);
-        return promisifyRequest(cursor._request).then(function(value) {
-          if (!value) return;
-          return new Cursor(value, cursor._request);
-        });
-      });
+      await Promise.resolve();
+      cursor._cursor[methodName].apply(cursor._cursor, args);
+      const value = await promisifyRequest(cursor._request);
+      if (!value)
+        return;
+      return new Cursor(value, cursor._request);
     };
   });
 
@@ -168,6 +158,7 @@ limitations under the License.
     'clear',
     'get',
     'getAll',
+    'getKey',
     'getAllKeys',
     'count'
   ]);
@@ -188,6 +179,9 @@ limitations under the License.
         resolve();
       };
       idbTransaction.onerror = function() {
+        reject(idbTransaction.error);
+      };
+      idbTransaction.onabort = function() {
         reject(idbTransaction.error);
       };
     });
@@ -252,7 +246,8 @@ limitations under the License.
       Constructor.prototype[funcName.replace('open', 'iterate')] = function() {
         var args = toArray(arguments);
         var callback = args[args.length - 1];
-        var request = (this._store || this._index)[funcName].apply(this._store, args.slice(0, -1));
+        var nativeObject = this._store || this._index;
+        var request = nativeObject[funcName].apply(nativeObject, args.slice(0, -1));
         request.onsuccess = function() {
           callback(request.result);
         };
@@ -286,9 +281,9 @@ limitations under the License.
   });
 
   var exp = {
-    open: function(name, version, upgradeCallback) {
+    open: async function(name, version, upgradeCallback) {
       var p = promisifyRequestCall(indexedDB, 'open', [name, version]);
-      var request = p.request;
+      var request = await p.request;
 
       request.onupgradeneeded = function(event) {
         if (upgradeCallback) {
@@ -296,9 +291,8 @@ limitations under the License.
         }
       };
 
-      return p.then(function(db) {
-        return new DB(db);
-      });
+      const db_1 = await p;
+      return new DB(db_1);
     },
     delete: function(name) {
       return promisifyRequestCall(indexedDB, 'deleteDatabase', [name]);
@@ -307,6 +301,7 @@ limitations under the License.
 
   if (typeof module !== 'undefined') {
     module.exports = exp;
+    module.exports.default = module.exports;
   }
   else {
     self.idb = exp;

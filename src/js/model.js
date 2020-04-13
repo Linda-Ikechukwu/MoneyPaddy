@@ -1,30 +1,51 @@
-class Input {
-  constructor(id, description, value) {
-    this.id = id;
-    this.description = description;
-    this.value = value;
-    this.percentage = -1;
-  }
-}
-
 export const appModel = (function () {
-  //constructor for the Input Data, both expense and income
+  //object constructor for the Input Data, both expense and income
+  class Input {
+    constructor(id, description, value) {
+      this.id = id;
+      this.description = description;
+      this.value = value;
+    }
+  }
+
   const calculateTotal = (type) => {
     let sum = 0;
     readData(type).then((data) => {
       for (var i = 0; i < data.length; i++) {
         sum += data[i].value;
+        localStorage.setItem(type, sum);
       }
     });
-    localStorage.setItem(type, sum);
+    
   };
+
+  const addNewData = async (type, desc, val) => {
+    try {
+      const data = await readData(type);
+      console.log(data)
+      let newData, newId;
+      if (data.length === 0) {
+        newId = 1;
+        newData = new Input(newId, desc, val);
+      }else{
+        newId = data[data.length - 1].id + 1;
+        newData = new Input(newId, desc, val);
+      }
+      
+      await writeData(type, newData);
+      return newData;
+  
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   return {
     addToDB: async function (type, desc, val) {
-      if (type === "expense") {
-        return await addNewData("expense", desc, val);
-      } else {
+      if (type === "income") {
         return await addNewData("income", desc, val);
+      } else {
+        return await addNewData("expense", desc, val);
       }
     },
 
@@ -73,18 +94,4 @@ export const appModel = (function () {
   };
 })();
 
-async function addNewData(type, desc, val) {
-  try {
-    const data = await readData(type);
-    let newData;
-    if (data && data.length > 0) {
-      const lastIndex = data[data.length - 1];
-      newData = new Input(lastIndex.id + 1, desc, val);
-      await writeData(type, newData);
-    }
-    return newData;
-  } catch (error) {
-    console.error(error);
-    return error;
-  }
-}
+

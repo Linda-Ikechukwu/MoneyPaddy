@@ -4,7 +4,6 @@
 const openIndexdb = idb.open("inputs", 2, (db) => {
   if (!db.objectStoreNames.contains("expense")) {
     db.createObjectStore("expense", { keyPath: "id" });
-    //db.createObjectStore('incomes', {keyPath: 'id'});
   }
   if (!db.objectStoreNames.contains("income")) {
     db.createObjectStore("income", { keyPath: "id" });
@@ -33,8 +32,8 @@ const writeData = async (obStore, data) => {
 const readData = async (obStore) => {
   try {
     const dbPromise = await openIndexdb;
-    const trnx = await dbPromise.transaction(obStore, "readonly");
-    return await trnx.objectStore(obStore).getAll();
+    const tx = await dbPromise.transaction(obStore, "readonly");
+    return await tx.objectStore(obStore).getAll();
   } catch (error) {
     console.error(error);
     return error;

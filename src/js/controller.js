@@ -122,12 +122,13 @@ export const appController = (function (modelCtl, viewCtl) {
       domElements.errMsgMobile.textContent = " ";
       //Add new data object to the budget controller
       newItem = modelCtl.addToDB(input.inputType, input.inputDescription, input.inputValue);
+      console.log(input.inputType);
       //clear form fields
       viewCtl.clearFormFields();
-      //Calculte and dispaly balance
-      updateBalance();
       //add item to UI
       viewCtl.addItemToUI(newItem, input.inputType);
+      //Calculte and dispaly balance
+      updateBalance();
       //Update Percentages
       viewCtl.calculateAndDisplayPercentages();
       
@@ -173,6 +174,7 @@ export const appController = (function (modelCtl, viewCtl) {
     viewCtl.displayDate();
     viewCtl.getUserCurrency();
     let balance = modelCtl.getBalance();
+    console.log(balance);
     viewCtl.displayBalance(balance);
     viewCtl.loadIncomeFromIDB();
     viewCtl.loadExpenseFromIDB();
@@ -215,12 +217,6 @@ export const appController = (function (modelCtl, viewCtl) {
       loadUIFromDB();
       setupEventListners();
       clearUIOnLastDayOfMonth();
-      writeData('expense', {
-        id: 1, description: "social media ish", value: 890, percentage:10
-      })
-      writeData('expense', {
-        id: 2, description: "social media ish", value: 890, percentage:20
-      })
       
       //Making sure that the expense ul has been loaded to the DOM,
       window.addEventListener('load', () =>{
