@@ -1,4 +1,4 @@
-<img src="screenshot.PNG" alt="Ui screenshot of the Money Paddy app">
+<img src="screenshoot.PNG" alt="Ui screenshot of the Money Paddy app">
 
 <h1 align="center">
   Money Paddy : Income and Expense Tracker
