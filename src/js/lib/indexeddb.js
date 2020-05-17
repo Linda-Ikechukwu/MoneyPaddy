@@ -1,4 +1,4 @@
-//For IndexedDB
+//This file contains functions that initialize and update the database
 
 //Create/Initialize our indexeddb databases
 const openIndexdb = idb.open("inputs", 2, (db) => {

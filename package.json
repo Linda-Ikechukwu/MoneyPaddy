@@ -13,12 +13,13 @@
     "url": "git+https://github.com/Linda-Ikechukwu/MoneyPaddy.git"
   },
   "keywords": [
-    "Linda",
-    "Ikechukwu",
+    "Linda Ikechukwu",
     "Income",
     "Tracker",
     "Expense",
-    "tracker"
+    "tracker",
+    "PWA App",
+    "Indexed DB"
   ],
   "author": "Linda Ikechukwu",
   "license": "ISC",

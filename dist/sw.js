@@ -1,4 +1,4 @@
-const staticCacheName = 'static-45';
+const staticCacheName = 'static-46';
 const staticFiles = [
     './',
     './css/app.css',
@@ -66,8 +66,6 @@ self.addEventListener('fetch', event => {
 
 //Display push message
 self.addEventListener('push', (event) => {
-    console.log('[Service Worker] Push Received.');
-    console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
 
     const title = 'You havent recorded anything over 5 hours!!';
     const options = {
@@ -83,7 +81,7 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', event => {
     const rootUrl = new URL('/', location).href;
     event.notification.close();
-    // Enumerate windows, and call window.focus(), or open a new one.
+    // Enumerate windows, and call window.focus() if app is already open in a window, or open a new one.
     event.waitUntil(
         clients.matchAll().then(matchedClients => {
             for (let client of matchedClients) {
@@ -97,6 +95,7 @@ self.addEventListener('notificationclick', event => {
     );
 });
 
+//Sync inputs from the expenses-sync object tore to firebase db for push notificaton, then delete
 self.addEventListener('sync', function (event) {
     console.log('[Service Worker] Background syncing', event);
     if (event.tag === 'sync-new-posts') {

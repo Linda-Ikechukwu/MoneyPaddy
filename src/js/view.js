@@ -1,11 +1,10 @@
+//This file contains functions that define DOM Interactions for the app
+
 import { domElements } from './base';
 import { configureSubscription } from './pushmessage';
-// import {} from './lib/indexeddb'
-
-
-
 
 export const appView = (function () {
+  
   //Private function to format numbers
   const formatNumber = function (num) {
     let numSplit, integer, decimal;
@@ -44,11 +43,12 @@ export const appView = (function () {
 
     //Publicly accessible method which accepts the resulting object; newItem and its type
     addItemToUI: async function (obj, type) {
+      
       var newHtml, element;
+      
       //Create html templates based on each input type i.e income or expenses
       const data = await obj
       if (type === 'income') {
-        console.log(obj, type);
         element = domElements.incomeList;
         newHtml = `<li id="${type}-${data.id}">
                     <span class="add_remove">&times</span>
@@ -58,7 +58,6 @@ export const appView = (function () {
         
       } else if (type === 'expense') {
         element = domElements.expenseList;
-        console.log(obj, type);
         newHtml = `<li id="${type}-${data.id}">
                     <span class="add_remove">&times</span>
                     <span class="add_description">${data.description}</span>
@@ -69,27 +68,75 @@ export const appView = (function () {
 
       //Insert newHtml to either an expense list or income list
       element.insertAdjacentHTML('afterbegin', newHtml);
+    
     },
 
+    //Calculate percentage for all expenses
     calculateAndDisplayPercentages: function(){
+      
       let totalIncome = parseInt(localStorage.getItem('income'));
+      console.log('totalincome :',totalIncome);
+      
       //get all the lis in expenses ul
       let expenses = domElements.expenseList.getElementsByTagName('li');
 
       for(let i = 0; i < expenses.length; i++){
+
+        //get string in span and remove spaces from the string
         let string = expenses[i].getElementsByTagName('span')[2].textContent.trim();
         let stringSplit = string.split(' ');
-        let amount = parseInt(stringSplit[1]);
-        let percentage = 0;
+        let amount = parseInt(stringSplit[1].split(',').join(''));
+        console.log(amount);
+        let percentage;
 
         if (totalIncome > 0) {
           percentage = Math.round((amount / totalIncome) * 100);
         } else {
-          percentage = -1;
+          percentage = 1;
         }
         
-        expenses[i].getElementsByTagName('span')[3].textContent = percentage;
+        expenses[i].getElementsByTagName('span')[3].textContent = `- ${percentage}%`;
       }
+    },
+
+    updateTotalsandBalance: function(input){
+      let totalIncome
+      //if input is income, calculate update total incomes
+      if(input.inputType === 'income'){
+        let income = parseInt(localStorage.getItem("income"));
+        totalIncome = income + parseInt(input.inputValue);
+        domElements.totalIncome.textContent = formatNumber(totalIncome);
+        localStorage.setItem("income",totalIncome);
+
+      //if input is expense, calculate update total expenses
+      }else {
+        let expense = parseInt(localStorage.getItem("expense"));
+        let totalExpense = expense + parseInt(input.inputValue);
+        domElements.totalExpense.textContent = formatNumber(totalExpense);
+        localStorage.setItem("expense",totalExpense);
+      }
+       
+       let totalExpenses = parseInt(localStorage.getItem("expense"));
+       let totalIncomes = parseInt(localStorage.getItem("income"));
+       let percentage;
+       
+       //Calculate, update and store balance in localstorage
+       let balance = totalIncomes - totalExpenses;
+       domElements.availableBalance.textContent = balance;
+       localStorage.setItem("Balance", balance);
+       
+       //Determine and display sign
+       balance > 0 ?  domElements.sign.textContent = '+' :  domElements.sign.textContent = '-';
+      
+       //Determine and display expense percentage
+        if(totalIncomes > 0) {
+          percentage = Math.round((totalExpenses / totalIncomes) * 100);
+        } else {
+          percentage = -1;
+        }
+
+        domElements.totalPercentage.textContent = `${percentage}%`;
+        localStorage.setItem("Percentage", percentage);
     },
 
     loadIncomeFromIDB: function(){
@@ -124,6 +171,21 @@ export const appView = (function () {
           }
         }
       })
+    },
+
+    loadTotalsFromLocalStorage: function (obj) {
+     
+      let sign;
+      obj.balance > 0 ? sign = '+' : sign = '-';
+
+      domElements.sign.textContent = sign;
+      domElements.availableBalance.textContent = formatNumber(obj.balance);
+      domElements.totalIncome.textContent = formatNumber(obj.totalIncome);
+      domElements.totalExpense.textContent = formatNumber(obj.totalExpense);
+      domElements.userCurrency.innerHTML = obj.userCurrency;
+
+      obj.percentage > 0 ? domElements.totalPercentage.textContent = obj.percentage + '%' : domElements.totalPercentage.textContent = '--';
+    
     },
 
     //Function to display the Mobile Form
@@ -167,48 +229,6 @@ export const appView = (function () {
       })
     },
 
-    displayBalance: function (obj) {
-      //Check if respective localstorages exist, then read data
-      if((localStorage.hasOwnProperty('Balance')) && (localStorage.hasOwnProperty('income')) && (localStorage.hasOwnProperty('expense')) && (localStorage.hasOwnProperty('Percentage'))){
-        let sign;
-        obj.balance > 0 ? sign = '+' : sign = '-';
-  
-        domElements.sign.textContent = sign;
-        domElements.availableBalance.textContent = formatNumber(obj.balance);
-        domElements.totalIncome.textContent = formatNumber(obj.totalIncome);
-        domElements.totalExpense.textContent = formatNumber(obj.totalExpense);
-  
-        obj.percentage > 0 ? domElements.totalPercentage.textContent = obj.percentage + '%' : domElements.totalPercentage.textContent = '--';
-      
-      }else{
-        domElements.sign.textContent = ' ';
-        domElements.availableBalance.textContent = '0';
-        domElements.totalIncome.textContent = '0';
-        domElements.totalExpense.textContent = '0';
-      }
-      
-      
-
-    },
-
-    displayPercentages: function (percentages) {
-      let fields;
-
-      //Select all expense percentages span and convert the nodelist to an array
-      fields = Array.from(domElements.percentages);
-
-      //Call the nodelistforeaach function to loop through the fields nodestring
-      fields.forEach((field, index) => {
-        if (percentages[index] > 0) {
-          field.textContent = `- ${percentages[index]}%`;
-        } else {
-          field.textContent = `--`;
-        }
-      }
-      );
-
-    },
-
     displayDate: function () {
       let now, year, month, months;
       now = new Date();
@@ -222,6 +242,7 @@ export const appView = (function () {
 
     },
 
+    //delete input item from ui
     deleteFromUI: (selectorID) => {
       document.getElementById(selectorID).remove();
     },
@@ -229,15 +250,6 @@ export const appView = (function () {
     setUserCurrency: () => {
       localStorage.setItem('userCurrency', domElements.selectCurrency.value);
       domElements.userCurrency.innerHTML = localStorage.getItem('userCurrency');
-    },
-
-    getUserCurrency: () => {
-      if (localStorage.hasOwnProperty('userCurrency')) {
-        domElements.userCurrency.innerHTML = localStorage.getItem('userCurrency');
-      }
-      else {
-        domElements.userCurrency.innerHTML = '&#8358;';
-      }
     },
 
     ifShowNotificationRadio: ()=> {
