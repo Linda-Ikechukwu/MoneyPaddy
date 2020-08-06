@@ -1,4 +1,4 @@
-const staticCacheName = 'static-46';
+const staticCacheName = 'static-47';
 const staticFiles = [
     './',
     './css/app.css',
