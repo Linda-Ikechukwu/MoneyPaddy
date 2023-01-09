@@ -30,7 +30,7 @@
   "dependencies": {
     "babel-polyfill": "^6.26.0",
     "cors": "^2.8.5",
-    "firebase-admin": "^8.10.0",
+    "firebase-admin": "^11.4.1",
     "idb": "^5.0.1"
   },
   "devDependencies": {
